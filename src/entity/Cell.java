@@ -27,7 +27,24 @@ public class Cell {
 		this.y = c.getY();
 	}
 	
-	public boolean isEqual(Cell c) {
+	@Override
+	public boolean equals(Object o) {
+		
+		// If the object is compared with itself then return true   
+        if (o == this) { 
+            return true; 
+        } 
+  
+        // Check if o is an instance of Cell or not 
+        // "null instanceof [type]" also returns false
+        if (!(o instanceof Cell)) { 
+            return false; 
+        } 
+        
+        // typecast o to Cell so that we can compare data members  
+        Cell c = (Cell) o; 
+        
+        // Execute comparison
 		if (x == c.getX() && y == c.getY()) 
 			return true;
 		else

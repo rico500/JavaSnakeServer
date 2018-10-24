@@ -79,6 +79,10 @@ public class Snake implements Entity{
 		step++;
 	}
 	
+	public boolean isPlayable() {
+		return true;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Snake: ");

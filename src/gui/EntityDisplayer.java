@@ -5,26 +5,31 @@ import java.util.Collection;
 
 import entity.Cell;
 import entity.Entity;
-import javafx.application.Application;
+import game.Game;
 import javafx.scene.Node;
 
 public class EntityDisplayer extends GameFrame{
 
-	private ArrayList<Entity> entityList = new ArrayList<Entity>();
+	protected Game game ;
 	
-	public void addEntity(Entity e) {
-		entityList.add(e);
-	}
-	
-	public boolean removeEntity(Entity e) {
-		return entityList.remove(e);
+	public EntityDisplayer(Game game) {
+		this.game = game;
 	}
 	
 	@Override
 	public Collection<Node> gameStep() {
-		ArrayList<Node> nodeList = new ArrayList<Node>();
-		for(Entity e : entityList) {
+		
+		// update all entities in game
+		for(Entity e : game.getEntityList()) {
 			e.evolve();
+		}
+		
+		// check and handle contacts
+		game.handleContacts();
+		
+		// take care of rearranging data on current state of game to display it
+		ArrayList<Node> nodeList = new ArrayList<Node>();
+		for(Entity e : game.getEntityList()) {
 			for(Cell c : e.getCellList())
 			nodeList.add(new DisplayableCell(c.getX(), c.getY(), ELEMENT_SIZE ,e.getColor()));
 		}

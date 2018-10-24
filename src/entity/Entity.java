@@ -10,5 +10,6 @@ public interface Entity {
 	public ArrayList<Cell> getCellList();
 	public Color getColor();
 	public void evolve();
+	public boolean isPlayable();
 	
 }
