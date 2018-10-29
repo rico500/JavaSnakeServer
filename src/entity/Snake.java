@@ -3,7 +3,6 @@ package entity;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
-import javafx.scene.Node;
 
 import mouvement.Mouvement;
 
@@ -17,6 +16,9 @@ public class Snake implements Entity{
 	
 	/** indicates number of steps before the snake grows by one cell */
 	private static final int GROW_RATE = 4;
+	
+	/** key string */
+	public static final String KEY = "SNAKE";
 	
 	/************************************************************************
 	 * 
@@ -38,28 +40,48 @@ public class Snake implements Entity{
 	 * 
 	 ************************************************************************/
 	
+	public Snake(Mouvement mvmtType, Color color) {
+		this.mvmt = mvmtType;
+		this.color = color;
+	}
+	
 	public Snake(Mouvement mvmtType, int x0, int y0, Color color) {
 		this.mvmt = mvmtType;
 		this.color = color;
 		snake.add(new Cell(x0, y0));
 	}
 	
-	public ArrayList<Cell> getCellList(){
-		return snake;
-	}
+	/************************************************************************
+	 * 
+	 * CLASS METHODS
+	 * 
+	 ************************************************************************/
 	
 	public Mouvement getMouvement() {
 		return mvmt;
 	}
 	
+	@Override
+	public ArrayList<Cell> getCellList(){
+		return snake;
+	}
+	
+	@Override
 	public Color getColor() {
 		return color;
 	}
 	
+	@Override
+	public String getKey() {
+		return KEY;
+	}
+	
+	@Override
 	public void addCell(int x, int y) {
 		snake.add(new Cell(x, y));
 	}
 	
+	@Override
 	public void evolve() {
 		int startIndex;
 		if(step%GROW_RATE == 0) {
@@ -79,6 +101,7 @@ public class Snake implements Entity{
 		step++;
 	}
 	
+	@Override
 	public boolean isPlayable() {
 		return true;
 	}

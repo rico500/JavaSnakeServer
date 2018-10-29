@@ -39,4 +39,19 @@ public enum Directions {
 		}
 		return dir;
 	}
+	
+	public int toValue() {
+		switch(this) {
+		case NORTH :
+			return 0;
+		case EAST :
+			return 1;
+		case SOUTH :
+			return 2;
+		case WEST :
+			return 3;
+		default :
+			throw new RuntimeException("Unknown direction.");
+		}
+	}
 }

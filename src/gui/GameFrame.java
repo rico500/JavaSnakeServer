@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public abstract class GameFrame extends Application implements Runnable {
+public abstract class GameFrame extends Application implements Runnable{
 
 	// ***************************************************************************** //
 	// *                                                                           * //
@@ -21,7 +21,7 @@ public abstract class GameFrame extends Application implements Runnable {
 	// *                                                                           * //
 	// ***************************************************************************** //
 	/** Speed of the game */
-	static public final long DELAY_MS = 1000L;
+	static public final long DELAY_MS = 100L;
 
 	/** Graphical window title */
 	static public String TITLE = "Game";
@@ -83,7 +83,7 @@ public abstract class GameFrame extends Application implements Runnable {
 		primaryStage.setTitle(TITLE);
 		primaryStage.setResizable(false);
 		primaryStage.show();	
-
+		
 		// Schedule the first game step.
 		// Usually a JavaFX game would use a TimeLine object in order to define the KeyFrames
 		// of an animation.
