@@ -7,7 +7,6 @@ import entity.Cell;
 public class RandomMouvement implements Mouvement{
 
 	private static final int MAXSTEPS = 3;
-	private static final String MV_ID = "RAND";
 	
 	private int nSteps;
 	private int step = 1;

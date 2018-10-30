@@ -27,8 +27,10 @@ public class Snake implements Entity{
 	 ************************************************************************/
 	
 	/** step counter, to know when to grow */
-	private int step = 1;
-
+	private int step = -1;
+	
+	/** unique ID to identify identity between server and client */
+	private int ID;
 	
 	private ArrayList<Cell> snake = new ArrayList<Cell>();
 	private final Mouvement mvmt;
@@ -104,6 +106,18 @@ public class Snake implements Entity{
 	@Override
 	public boolean isPlayable() {
 		return true;
+	}
+	
+	@Override
+	public void setID(int ID) {
+		this.ID = ID; 
+	}
+	
+	@Override
+	public int getID() {
+		if(ID == -1)
+			throw new NullPointerException("Snake ID equals -1. It hasn't been set yet.");
+		return ID;
 	}
 	
 	public String toString() {

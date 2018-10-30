@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,25 +30,73 @@ public class Game implements Runnable{
 	 ************************************************************************/
 	
 	/** Set entities in game */
-	ArrayList<Entity> entityList = new ArrayList<Entity>();
+	HashMap<Integer, Entity> entityMap = new HashMap<Integer, Entity>();
+	
+	/** List of listening instances implementing GameListener*/
+	ArrayList<GameListener> listenerList = new ArrayList<GameListener>();
 	
 	/** Timer to schedule gameSteps */
 	Timer timer;
 	
+	/************************************************************************
+	 * 
+	 * CONSTRUCTORS
+	 * 
+	 ************************************************************************/
+	
 	public Game() {};
 	
-	public void addEntity(Entity e) {
-		entityList.add(e);
+	/************************************************************************
+	 * 
+	 * PUBLIC METHODS
+	 * 
+	 ************************************************************************/
+	
+	public void addEntity(int ID, Entity e) {
+		e.setID(ID);
+		entityMap.put(ID, e);
+	}
+	
+	public boolean removeEntity(int ID, Entity e) {
+		return entityMap.remove(ID, e);
 	}
 	
 	public boolean removeEntity(Entity e) {
-		return entityList.remove(e);
+		return entityMap.remove(e.getID(), e);
 	}
 	
-	public ArrayList<Entity> getEntityList(){
-		return entityList;
+	public Entity getFirstEntity() {
+		Object[] entityArray =  entityMap.values().toArray();
+		return ((Entity) entityArray[0]);
+	}
+	
+	public Entity getEntity(int ID) {
+		return entityMap.get(ID);
+	}
+	
+	public Entity getEntity(Entity e) {
+		return entityMap.get(e.getID());
+	}
+	
+	public HashMap<Integer, Entity> getEntityMap(){
+		return entityMap;
 	} 
 	
+	public void addListener(GameListener listener) {
+		listenerList.add(listener);
+	}
+	
+	/************************************************************************
+	 * 
+	 * GAME STEP TIMING
+	 * 
+	 ************************************************************************/
+	
+	/**
+	 * 
+	 * Starts the timer process which executes game steps at regular intervals.
+	 *
+	 */
 	public void startGame() {
 		// Create the timer
 		timer = new Timer();
@@ -56,6 +105,11 @@ public class Game implements Runnable{
 		timer.schedule(new GameTimerTask(this), TIME_STEP);
 	}
 	
+	/**
+	 * 
+	 * Task class. Calls the runnable method at regular time intervals
+	 *
+	 */
 	private class GameTimerTask extends TimerTask {
 
 		Game game;
@@ -75,10 +129,16 @@ public class Game implements Runnable{
 
 	}
 	
+	/**
+	 * 
+	 * Runnable method executed at a regular interval defined by TIME_STEP.
+	 * All game logic and event notification starts from here.
+	 * 
+	 */
 	@Override
 	public void run() {
 		// update all entities in game
-		for(Entity e : entityList) {
+		for(Entity e : entityMap.values()) {
 			e.evolve();
 		}
 
@@ -87,8 +147,17 @@ public class Game implements Runnable{
 		// collision.
 		handleContacts();
 		
+		// call listeners
+		notifyListeners();
+		
 		timer.schedule(new GameTimerTask(this), TIME_STEP);
 	}
+	
+	/************************************************************************
+	 * 
+	 * PRIVATE METHODS (GAME LOGIC)
+	 * 
+	 ************************************************************************/
 	
 	/**
 	 * 
@@ -106,7 +175,7 @@ public class Game implements Runnable{
 		ArrayList<ContactPair> contactList = new ArrayList<ContactPair>();
 		
 		// Check each entity for contacts with other entity or frame bounds 
-		for(Entity challenger : entityList) {
+		for(Entity challenger : entityMap.values()) {
 			
 			// Check if the challenger is a playable entity (which can die on contact)
 			if(challenger.isPlayable()) {
@@ -116,7 +185,7 @@ public class Game implements Runnable{
 				
 				// Check if the head is found at the same location as other entities or
 				// is out of bounds 
-				for(Entity defender : entityList) {
+				for(Entity defender : entityMap.values()) {
 
 					// if it is found at the location of another entity...
 					if(!defender.equals(challenger) && defender.getCellList().contains(head)) {
@@ -153,7 +222,7 @@ public class Game implements Runnable{
 			if (contact.getChallenger().getClass() == Snake.class && 
 					contact.getDefender() == null) {
 				// The challenging snake dies and is removed from the list
-				entityList.remove(contact.getChallenger());
+				removeEntity(contact.getChallenger());
 				System.out.println("Contact between challenging snake " + contact.getChallenger()
 				+ " and wall.");
 				System.out.println("Snake " + contact.getChallenger() + " dies.");
@@ -164,7 +233,7 @@ public class Game implements Runnable{
 				if(contact.getChallenger().getClass() == Snake.class && 
 				contact.getDefender().getClass() == Snake.class) {
 					// The out-of-bounds snake dies and is removed from the list
-					entityList.remove(contact.getChallenger());
+					removeEntity(contact.getChallenger());
 					System.out.println("Contact between challenging snake " + contact.getChallenger()
 					+ " and defending snake " + contact.getDefender());
 					System.out.println("Snake " + contact.getChallenger() + " dies.");
@@ -190,4 +259,15 @@ public class Game implements Runnable{
 		return (head.getX()>=GRID_SIZE || head.getY()>=GRID_SIZE || head.getX()<0 || head.getY()<0);
 	}
 
+	/************************************************************************
+	 * 
+	 * PRIVATE METHODS (EVENT LOGIC)
+	 * 
+	 ************************************************************************/
+	
+	private void notifyListeners() {
+		for(GameListener gl : listenerList) {
+			gl.gameStepJob(this);
+		}
+	}
 }

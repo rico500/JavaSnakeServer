@@ -13,5 +13,7 @@ public interface Entity {
 	public String getKey();
 	public void evolve();
 	public boolean isPlayable();
+	public void setID(int ID);
+	public int getID();
 	
 }

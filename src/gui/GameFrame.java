@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -70,10 +71,14 @@ public abstract class GameFrame extends Application implements Runnable{
 		Scene scene = new Scene(root, WINDOW_SIZE, WINDOW_SIZE, BG_COLOR);
 		
 		// add a KeyEvent listener to the scene
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> Keyboard.storeLastKeyCode(event.getCode()));
+		scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			public void handle(KeyEvent event) {
+				keyEventHandler(event);
+			} 
+		});
 		
 		// terminate the Application when the window is closed
-		primaryStage.setOnCloseRequest(event -> { Platform.exit(); System.exit(0); } );
+		primaryStage.setOnCloseRequest(event -> { exitEventHandler(); Platform.exit(); System.exit(0); } );
 
 		// Create the timer
 		timer = new Timer();
@@ -128,4 +133,14 @@ public abstract class GameFrame extends Application implements Runnable{
 	 * outside the window bounds...
 	 */
 	public abstract Collection<Node> gameStep();
+	
+	/**
+	 * Implement exit event actions
+	 */
+	public abstract void exitEventHandler();
+	
+	/**
+	 * Callback for KeyEvents
+	 */
+	public abstract void keyEventHandler(KeyEvent event);
 }

@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
  *  
  *  The syntax is :
  *  
- *  PUT EntityType ColorR ColorG ColorB ColorO [Opts] [CellLocation]
+ *  PUT EntityType ID ColorR ColorG ColorB ColorO [Opts] [CellLocation]
  * 
  * @author ebrunner
  *
@@ -45,7 +45,7 @@ public class PUTRequest extends Request{
 
 	/************************************************************************
 	 * 
-	 * CONSTRUCTOR
+	 * CONSTRUCTORS
 	 * 
 	 ************************************************************************/
 	
@@ -67,6 +67,7 @@ public class PUTRequest extends Request{
 	@Override
 	public void handleRequest(StringTokenizer st) {
 		String entityType = st.nextToken();	
+		int entityID = Integer.parseInt(st.nextToken());
 		Color color = new Color(Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
@@ -79,9 +80,11 @@ public class PUTRequest extends Request{
 			tmpEntity = new Snake(new StraightMouvement(dir), color);
 			while(st.hasMoreTokens())
 				tmpEntity.addCell(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+		} else {
+			throw new RuntimeException("In PUT request, unknown entityType " + entityType);
 		}
 		
-		game.addEntity(tmpEntity);
+		game.addEntity(entityID, tmpEntity);
 	}
 
 	@Override
@@ -92,6 +95,8 @@ public class PUTRequest extends Request{
 		sb.append(KEY);
 		sb.append(" ");
 		sb.append(entityToPut.getKey());
+		sb.append(" ");
+		sb.append(entityToPut.getID());
 		sb.append(" ");
 		sb.append(entityToPut.getColor().getRed());
 		sb.append(" ");

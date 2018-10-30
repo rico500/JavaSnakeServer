@@ -18,16 +18,6 @@ public class Server {
 
 	private static Game game;
 	
-	private static HashMap<String, Request> requestMap = new HashMap<String, Request>();
-	
-	private static void initializeRequestMap() {
-		requestMap.put(PUTRequest.KEY, new PUTRequest(game));
-	}
-	
-	public static Request getRequest(String key) {
-		return requestMap.get(key);
-	}
-	
 	public static void main(String[] args) throws IOException {
 		
 		// Read server listener port from launch arguments
@@ -53,17 +43,12 @@ public class Server {
 			throw e;
 		} 
 		
-		// Store list of clients
-		ArrayList<ServerThread> stList = new ArrayList<ServerThread>();
-		
 		// Start game
 		game = new Game();
 		game.startGame();
 		
-		initializeRequestMap();
-		
 		// Initialize Client counter
-		int counter = 0;
+		int counter = 1;
 		
 		// Accept clients as they come
 		while(true) {
@@ -79,17 +64,21 @@ public class Server {
 			Snake snake = new Snake(new StraightMouvement(Directions.NORTH), 0, 0, Color.AQUAMARINE);
 			
 			// add snake to game simulation
-			game.addEntity(snake);
+			// TODO add unique ID finder
+			game.addEntity(counter, snake);
 			
 			// initialize thread that will take care of client
-			ServerThread st = new ServerThread(clientComSocket, snake, counter);
+			ServerThread st = new ServerThread(clientComSocket, game, snake);
+			
+			// add serverThread as a game listener
+			game.addListener(st);
 			
 			// launch thread
 			new Thread(st).start();
 			
 			System.out.println("Thread started for client " + counter);
 			
-			// increment client counter
+			// increment entity counter
 			counter ++;
 		}
 	}

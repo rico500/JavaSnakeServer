@@ -37,5 +37,9 @@ public class StraightMouvement implements Mouvement {
 	public Directions getDirection() {
 		return dir;
 	}
+	
+	public void setDirection(Directions dir) {
+		this.dir = dir;
+	}
 
 }
