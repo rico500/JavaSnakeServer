@@ -14,7 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-public abstract class GameFrame extends Application implements Runnable{
+public abstract class PeriodicGameFrame extends Application implements Runnable{
 
 	// ***************************************************************************** //
 	// *                                                                           * //

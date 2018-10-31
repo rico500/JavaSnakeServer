@@ -7,13 +7,13 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import net.request.EXITRequest;
 import net.request.PUTRequest;
 import net.request.Request;
 import net.request.SETRequest;
+import net.request.TICKRequest;
 
 public class ClientThread implements Runnable{
 
@@ -28,7 +28,9 @@ public class ClientThread implements Runnable{
 	
 	private static HashMap<String, Request> requestMap = new HashMap<String, Request>();
 	
-	boolean isRunning = true;
+	private boolean isRunning = true;
+	
+	private Runnable tickCallbackClass;
 	
 	public ClientThread(Socket serverComSocket, Game game) throws IOException {
 		this.serverComSocket = serverComSocket;
@@ -36,6 +38,11 @@ public class ClientThread implements Runnable{
 		reader = new BufferedReader(new InputStreamReader(
 				serverComSocket.getInputStream()
 				)) ;
+	}
+	
+	public ClientThread(Socket serverComSocket, Game game, Runnable tickCallbackClass) throws IOException {
+		this(serverComSocket, game);
+		this.tickCallbackClass = tickCallbackClass;
 	}
 	
 	public Snake getSnake() {
@@ -60,7 +67,7 @@ public class ClientThread implements Runnable{
 			snake = (Snake) game.getFirstEntity();
 			
 			// initializeRequestMap
-			initializeRequestMap(game);
+			initializeRequestMap();
 			
 			while(isRunning) {
 				if(reader.ready()) {
@@ -94,10 +101,11 @@ public class ClientThread implements Runnable{
 		serverComSocket.close();
 	}
 	
-	private void initializeRequestMap(Game game) {
+	private void initializeRequestMap() {
 		requestMap.put(PUTRequest.KEY, new PUTRequest(game));
 		requestMap.put(EXITRequest.KEY, new EXITRequest(new exitCallbackClass()));
 		requestMap.put(SETRequest.KEY, new SETRequest(game));
+		requestMap.put(TICKRequest.KEY, new TICKRequest(tickCallbackClass));
 	}
 
 	private Request getRequest(String key) {
@@ -112,5 +120,5 @@ public class ClientThread implements Runnable{
 		}
 		
 	}
-
+	
 }

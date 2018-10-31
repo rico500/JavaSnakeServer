@@ -16,6 +16,7 @@ import net.request.EXITRequest;
 import net.request.PUTRequest;
 import net.request.Request;
 import net.request.SETRequest;
+import net.request.TICKRequest;
 
 public class ServerThread implements Runnable, GameListener {
 
@@ -83,6 +84,8 @@ public class ServerThread implements Runnable, GameListener {
 				outToClient.flush();
 			}
 		}
+		outToClient.println(new TICKRequest().createRequest());
+		outToClient.flush();
 	}
 	
 	/************************************************************************

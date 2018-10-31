@@ -12,7 +12,7 @@ import entity.Entity;
 import entity.Snake;
 import game.Game;
 import gui.DisplayableCell;
-import gui.GameFrame;
+import gui.PeriodicGameFrame;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
@@ -21,7 +21,7 @@ import net.client.ClientThread;
 import net.request.EXITRequest;
 import net.request.SETRequest;
 
-public class ClientSETTest extends GameFrame {
+public class ClientSETTest extends PeriodicGameFrame {
 	
 	private static Game game ;
 

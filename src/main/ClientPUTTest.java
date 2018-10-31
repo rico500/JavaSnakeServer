@@ -10,14 +10,14 @@ import entity.Cell;
 import entity.Entity;
 import game.Game;
 import gui.DisplayableCell;
-import gui.GameFrame;
+import gui.PeriodicGameFrame;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 import net.client.ClientThread;
 import net.request.EXITRequest;
 
-public class ClientPUTTest extends GameFrame{
+public class ClientPUTTest extends PeriodicGameFrame{
 	
 	private static Game game ;
 	

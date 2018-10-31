@@ -138,9 +138,7 @@ public class Game implements Runnable{
 	@Override
 	public void run() {
 		// update all entities in game
-		for(Entity e : entityMap.values()) {
-			e.evolve();
-		}
+		update();
 
 		// Check and handle contacts.
 		// Some entities may disappear at this point because of death due to a
@@ -151,6 +149,18 @@ public class Game implements Runnable{
 		notifyListeners();
 		
 		timer.schedule(new GameTimerTask(this), TIME_STEP);
+	}
+	
+	/**
+	 * 
+	 * Have all entities in game evolve. The method is runnable from instances of game
+	 * which are not periodically updated.
+	 * 
+	 */
+	public void update() {
+		for(Entity e : entityMap.values()) {
+			e.evolve();
+		}
 	}
 	
 	/************************************************************************

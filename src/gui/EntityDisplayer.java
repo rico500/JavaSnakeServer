@@ -9,7 +9,7 @@ import game.Game;
 import javafx.scene.Node;
 import javafx.scene.input.KeyEvent;
 
-public class EntityDisplayer extends GameFrame{
+public class EntityDisplayer extends PeriodicGameFrame{
 
 	protected static Game game ;
 	
