@@ -1,25 +1,25 @@
 package game;
 
+import entity.Snake;
 import entity.Cell;
-import entity.Entity;
 
 public class ContactPair {
 
-	private Entity challenger;
-	private Entity defender;
+	private Snake challenger;
+	private Snake defender;
 	private Cell contactLocation;
 	
-	public ContactPair(Entity challenger, Entity defender, Cell contactLocation) {
+	public ContactPair(Snake challenger, Snake defender, Cell contactLocation) {
 		this.challenger = challenger;
 		this.defender = defender;
 		this.contactLocation = contactLocation;
 	}
 
-	public Entity getChallenger() {
+	public Snake getChallenger() {
 		return challenger;
 	}
 
-	public Entity getDefender() {
+	public Snake getDefender() {
 		return defender;
 	}
 

@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 
 import mouvement.Mouvement;
 
-public class Snake implements Entity{
+public class Snake {
 	
 	/************************************************************************
 	 * 
@@ -63,27 +63,22 @@ public class Snake implements Entity{
 		return mvmt;
 	}
 	
-	@Override
 	public ArrayList<Cell> getCellList(){
 		return snake;
 	}
 	
-	@Override
 	public Color getColor() {
 		return color;
 	}
 	
-	@Override
 	public String getKey() {
 		return KEY;
 	}
 	
-	@Override
 	public void addCell(int x, int y) {
 		snake.add(new Cell(x, y));
 	}
 	
-	@Override
 	public void evolve() {
 		int startIndex;
 		if(step%GROW_RATE == 0) {
@@ -103,17 +98,10 @@ public class Snake implements Entity{
 		step++;
 	}
 	
-	@Override
-	public boolean isPlayable() {
-		return true;
-	}
-	
-	@Override
 	public void setID(int ID) {
 		this.ID = ID; 
 	}
 	
-	@Override
 	public int getID() {
 		if(ID == -1)
 			throw new NullPointerException("Snake ID equals -1. It hasn't been set yet.");

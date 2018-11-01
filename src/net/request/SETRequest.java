@@ -2,7 +2,6 @@ package net.request;
 
 import java.util.StringTokenizer;
 
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import mouvement.Directions;
@@ -11,11 +10,11 @@ import mouvement.StraightMouvement;
 
 /**
  * 
- * Modify an entitie's direction of evolution in the game.
+ * Modify a snake's direction of evolution in the game.
  * 
  * The syntax is :
  * 
- * SET EntityType ID STATE
+ * SET ID DIRECTION
  * 
  * @author ebrunner
  *
@@ -36,7 +35,7 @@ public class SETRequest extends Request {
 	 * 
 	 ************************************************************************/
 	
-	private Entity entityToSet;
+	private Snake snakeToSet;
 	private Directions dir;
 	
 	/************************************************************************
@@ -49,9 +48,9 @@ public class SETRequest extends Request {
 		super(game);
 	}
 	
-	public SETRequest(Game game, Entity entityToSet, Directions dir) {
+	public SETRequest(Game game, Snake snakeToSet, Directions dir) {
 		super(game);
-		this.entityToSet = entityToSet;
+		this.snakeToSet = snakeToSet;
 		this.dir = dir;
 	}
 	
@@ -64,42 +63,29 @@ public class SETRequest extends Request {
 	@Override
 	public void handleRequest(StringTokenizer st) {
 
-		// Parse request
-		String entityType = st.nextToken();	
-		int entityID = Integer.parseInt(st.nextToken());
-		
-		// if request is for a snake...
-		if(entityType.equals(Snake.KEY)) {
-			Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
-			// Set new state
-			Snake snakeToSet  = (Snake) game.getEntity(entityID);
-			Mouvement mouvToSet = snakeToSet.getMouvement();
-			if(mouvToSet.getClass() == StraightMouvement.class) {
-				StraightMouvement strMouvToSet = (StraightMouvement) mouvToSet;
-				strMouvToSet.setDirection(dir);
-				game.addModifiedEntity(snakeToSet);
-			} else {
-				throw new RuntimeException("In SET request for entity of type Snake, "
-						+ "only straight mouvement types may be modified.");
-			}
-			
-		// if request is for an unknown or untreated type...	
+		int snakeID = Integer.parseInt(st.nextToken());
+
+		Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
+		// Set new state
+		Snake snakeToSet  = game.getSnake(snakeID);
+		Mouvement mouvToSet = snakeToSet.getMouvement();
+		if(mouvToSet.getClass() == StraightMouvement.class) {
+			StraightMouvement strMouvToSet = (StraightMouvement) mouvToSet;
+			strMouvToSet.setDirection(dir);
+			game.addModifiedSnake(snakeToSet);
 		} else {
-			throw new RuntimeException("In SET request, unknown entityType " + entityType);
+			throw new RuntimeException("In SET request only straight mouvement types may be modified.");
 		}
-		
 	}
 
 	@Override
 	public String createRequest() {
 		
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(KEY);
 		sb.append(" ");
-		sb.append(entityToSet.getKey());
-		sb.append(" ");
-		sb.append(entityToSet.getID());
+		sb.append(snakeToSet.getID());
 		sb.append(" ");
 		sb.append(dir.getValue());
 		

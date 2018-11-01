@@ -65,7 +65,7 @@ public class ClientThread implements Runnable{
 			new PUTRequest(game).handleRequest(st);
 			
 			// set client snake to first snake in game
-			snake = (Snake) game.getFirstEntity();
+			snake = game.getFirstSnake();
 			
 			// initializeRequestMap
 			initializeRequestMap();

@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import gui.GameFrame;
@@ -59,7 +58,7 @@ public class Server {
 		
 			// add snake to game simulation
 			// TODO add unique ID finder
-			game.addEntity(counter, snake);
+			game.addSnake(counter, snake);
 		}
 		
 		// Create Client Array
@@ -73,14 +72,14 @@ public class Server {
 			System.out.println("New client accepted. ID: " + counter);
 			
 			// initialize thread that will take care of client
-			ServerThread st = new ServerThread(clientComSocket, game, (Snake) game.getEntity(counter));
+			ServerThread st = new ServerThread(clientComSocket, game, (Snake) game.getSnake(counter));
 			clientList.add(st);
 			
 			// launch thread
 			new Thread(st).start();
 			
 			// push client's entity to client first
-			st.pushEntity((Snake) game.getEntity(counter));
+			st.pushSnake(game.getSnake(counter));
 			
 			System.out.println("Thread started for client " + counter);
 			
@@ -90,9 +89,9 @@ public class Server {
 		
 		// push all other participating entities to game
 		for(ServerThread cl : clientList) {
-			for(Entity e : game.getEntityMap().values()) {
+			for(Snake e : game.getSnakeMap().values()) {
 				if(cl.getID() != e.getID()) {
-					cl.pushEntity(e);
+					cl.pushSnake(e);
 				}
 			}
 		}

@@ -11,7 +11,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import entity.Cell;
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import javafx.application.Application;
@@ -217,7 +216,7 @@ public abstract class GameFrame extends Application implements Runnable{
 	public Collection<Node> computeNodeList() {
 		// take care of rearranging data on current state of game to display it
 		ArrayList<Node> nodeList = new ArrayList<Node>();
-		for(Entity e : game.getEntityMap().values()) {
+		for(Snake e : game.getSnakeMap().values()) {
 			for(Cell c : e.getCellList())
 			nodeList.add(new DisplayableCell(c.getX(), c.getY(), ELEMENT_SIZE ,e.getColor()));
 		}

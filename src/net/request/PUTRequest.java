@@ -3,7 +3,6 @@ package net.request;
 import java.util.StringTokenizer;
 
 import entity.Cell;
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import mouvement.Directions;
@@ -20,7 +19,7 @@ import javafx.scene.paint.Color;
  *  
  *  The syntax is :
  *  
- *  PUT EntityType ID ColorR ColorG ColorB ColorO [Opts] [CellLocation]
+ *  PUT ID ColorR ColorG ColorB ColorO [Opts] [CellLocation]
  * 
  * @author ebrunner
  *
@@ -41,7 +40,7 @@ public class PUTRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	Entity entityToPut;
+	Snake snakeToPut;
 
 	/************************************************************************
 	 * 
@@ -49,9 +48,9 @@ public class PUTRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	public PUTRequest(Entity entity) {
+	public PUTRequest(Snake snake) {
 		super(null);
-		this.entityToPut = entity;
+		this.snakeToPut = snake;
 	}
 	
 	public PUTRequest(Game game) {
@@ -66,25 +65,20 @@ public class PUTRequest extends Request{
 	
 	@Override
 	public void handleRequest(StringTokenizer st) {
-		String entityType = st.nextToken();	
-		int entityID = Integer.parseInt(st.nextToken());
+		int snakeID = Integer.parseInt(st.nextToken());
 		Color color = new Color(Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()));
-		
-		Entity tmpEntity = null;
-		
-		if(entityType.equals(Snake.KEY)) {
-			Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
-			tmpEntity = new Snake(new StraightMouvement(dir), color);
-			while(st.hasMoreTokens())
-				tmpEntity.addCell(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
-		} else {
-			throw new RuntimeException("In PUT request, unknown entityType " + entityType);
-		}
-		
-		game.addEntity(entityID, tmpEntity);
+
+		Snake tmpSnake = null;
+
+		Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
+		tmpSnake = new Snake(new StraightMouvement(dir), color);
+		while(st.hasMoreTokens())
+			tmpSnake.addCell(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+
+		game.addSnake(snakeID, tmpSnake);
 	}
 
 	@Override
@@ -94,25 +88,20 @@ public class PUTRequest extends Request{
 		
 		sb.append(KEY);
 		sb.append(" ");
-		sb.append(entityToPut.getKey());
+		sb.append(snakeToPut.getID());
 		sb.append(" ");
-		sb.append(entityToPut.getID());
+		sb.append(snakeToPut.getColor().getRed());
 		sb.append(" ");
-		sb.append(entityToPut.getColor().getRed());
+		sb.append(snakeToPut.getColor().getGreen());
 		sb.append(" ");
-		sb.append(entityToPut.getColor().getGreen());
+		sb.append(snakeToPut.getColor().getBlue());
 		sb.append(" ");
-		sb.append(entityToPut.getColor().getBlue());
+		sb.append(snakeToPut.getColor().getOpacity());
 		sb.append(" ");
-		sb.append(entityToPut.getColor().getOpacity());
+		sb.append(Integer.toString(snakeToPut.getMouvement().getDirection().getValue()));
 		sb.append(" ");
-		if(entityToPut.getClass() == Snake.class) {
-			Snake snakeToPut = (Snake) entityToPut;
-			sb.append(Integer.toString(snakeToPut.getMouvement().getDirection().getValue()));
-			sb.append(" ");
-		}
 		
-		for(Cell c : entityToPut.getCellList()) {
+		for(Cell c : snakeToPut.getCellList()) {
 			sb.append(Integer.toString(c.getX()));
 			sb.append(" ");
 			sb.append(Integer.toString(c.getY()));

@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import entity.Entity;
 import entity.Snake;
 import game.Game;
 import game.GameListener;
@@ -76,7 +75,7 @@ public class ServerThread implements Runnable, GameListener {
 	 * 
 	 ************************************************************************/
 	
-	public void pushEntity(Entity e) {
+	public void pushSnake(Snake e) {
 		outToClient.println(new PUTRequest(e).createRequest());
 		outToClient.flush();
 	}
@@ -102,7 +101,7 @@ public class ServerThread implements Runnable, GameListener {
 	public void gameStepJob(Game game) {
 		
 		// Clients are informed of any modified entities by a set request
-		for(Entity e : game.getModifiedEntity()) {
+		for(Snake e : game.getModifiedSnake()) {
 			if(e.getClass() == Snake.class) {
 				Snake snakeToSet = (Snake) e;
 				outToClient.println(new SETRequest(game,snakeToSet, snakeToSet.getMouvement().getDirection()).createRequest());
@@ -118,7 +117,7 @@ public class ServerThread implements Runnable, GameListener {
 //		}
 		
 		// Clients are informed of any removed entities by a DELRequest
-		for(Entity e : game.getRemovedEntity()) {
+		for(Snake e : game.getRemovedSnake()) {
 			
 			// In case one of the removed entities is the client's snake itself,
 			// the client is asked to exit the game.
@@ -213,7 +212,7 @@ public class ServerThread implements Runnable, GameListener {
 		@Override
 		public void run() {		
 			isRunning = false;
-			game.removeEntity(snake);
+			game.removeSnake(snake);
 		}
 		
 	}

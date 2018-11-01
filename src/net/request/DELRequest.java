@@ -2,7 +2,7 @@ package net.request;
 
 import java.util.StringTokenizer;
 
-import entity.Entity;
+import entity.Snake;
 import game.Game;
 import mouvement.Directions;
 
@@ -34,7 +34,7 @@ public class DELRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	private Entity entityToDel;
+	private Snake snakeToDel;
 	
 	/************************************************************************
 	 * 
@@ -46,9 +46,9 @@ public class DELRequest extends Request{
 		super(game);
 	}
 	
-	public DELRequest(Entity entityToDel) {
+	public DELRequest(Snake snakeToDel) {
 		super(null);
-		this.entityToDel = entityToDel;
+		this.snakeToDel = snakeToDel;
 	}
 	
 	/************************************************************************
@@ -64,7 +64,7 @@ public class DELRequest extends Request{
 		String entityType = st.nextToken();	
 		int entityID = Integer.parseInt(st.nextToken());
 		
-		game.removeEntity(entityID);
+		game.removeSnake(entityID);
 		
 	}
 
@@ -75,9 +75,9 @@ public class DELRequest extends Request{
 		
 		sb.append(KEY);
 		sb.append(" ");
-		sb.append(entityToDel.getKey());
+		sb.append(snakeToDel.getKey());
 		sb.append(" ");
-		sb.append(entityToDel.getID());
+		sb.append(snakeToDel.getID());
 		
 		return sb.toString();
 		
