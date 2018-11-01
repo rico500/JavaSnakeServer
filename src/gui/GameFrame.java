@@ -28,7 +28,7 @@ import net.client.ClientThread;
 import net.request.EXITRequest;
 import net.request.SETRequest;
 
-public abstract class EventDrivenGameFrame extends Application implements Runnable{
+public abstract class GameFrame extends Application implements Runnable{
 
 	// ***************************************************************************** //
 	// *                                                                           * //
