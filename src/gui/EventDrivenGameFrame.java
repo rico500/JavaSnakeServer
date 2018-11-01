@@ -147,22 +147,34 @@ public abstract class EventDrivenGameFrame extends Application implements Runnab
 		Snake snakeToUpdate = clientThread.getSnake();
 		if(snakeToUpdate != null) {
 			
-			Directions dir = snakeToUpdate.getMouvement().getDirection();
+			// Get current snake's direction
+			Directions CurrentDir = snakeToUpdate.getMouvement().getDirection();
 			
+			// The direction implied from the Keyboard is stored temporarily for evaluation
+			Directions DesiredDir = CurrentDir;
+			
+			// A flag is set to mark if the entered key is known or not
 			boolean isKnown = false;
 			
+			// For any arrow key, set the desired direction of travel
 			switch(event.getCode()) {
 			
-			case LEFT:  dir = Directions.WEST; isKnown = true; break;
-			case UP:    dir = Directions.SOUTH; isKnown = true; break;
-			case RIGHT: dir = Directions.EAST; isKnown = true; break;
-			case DOWN:	dir = Directions.NORTH; isKnown = true; break;
+			case LEFT:  DesiredDir = Directions.WEST; isKnown = true; break;
+			case UP:    DesiredDir = Directions.SOUTH; isKnown = true; break;
+			case RIGHT: DesiredDir = Directions.EAST; isKnown = true; break;
+			case DOWN:	DesiredDir = Directions.NORTH; isKnown = true; break;
 			default : // ignore any other key
 				
 			}
 			
-			if(isKnown == true) {
-				writer.println(new SETRequest(game, snakeToUpdate, dir).createRequest());
+			// If the desired direction of travel is aligned with the current one, set flag
+			// to true. (aligned directions are NORTH & SOUTH and EAST & WEST)
+			boolean isAligned = ((CurrentDir.getValue() - DesiredDir.getValue())%2 == 0);
+			
+			// If all conditions are fulfilled, communicate new direction to server
+			if(isKnown == true  && !isAligned) {
+				CurrentDir = DesiredDir;
+				writer.println(new SETRequest(game, snakeToUpdate, CurrentDir).createRequest());
 				writer.flush();
 			}
 		}
@@ -182,10 +194,24 @@ public abstract class EventDrivenGameFrame extends Application implements Runnab
 		}
 	}
 	
+	/**
+	 * 
+	 * The runnable method is called whenever the server sends a TICK request
+	 * indicating that the client has all the information to compute the next step of
+	 * the game. All clients must complete the game step before starting to gather
+	 * information for the next one.
+	 * 
+	 */
 	@Override
 	public void run() {
+		// update entity locations based on indications from server
 		game.update();
+		
+		// display entities
 		root.getChildren().setAll(computeNodeList());
+		
+		// Clear all modification lists
+		game.clearAllModLists();
 	}
 	
 	public Collection<Node> computeNodeList() {

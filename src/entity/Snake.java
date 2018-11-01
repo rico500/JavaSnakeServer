@@ -121,6 +121,10 @@ public class Snake implements Entity{
 	}
 	
 	public String toString() {
+		return "Snake " + ID + " ";
+	}
+	
+	public String toStringLong() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Snake: ");
 		for(Cell c : snake)

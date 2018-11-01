@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import entity.Snake;
 import game.Game;
+import net.request.DELRequest;
 import net.request.EXITRequest;
 import net.request.PUTRequest;
 import net.request.Request;
@@ -106,6 +107,7 @@ public class ClientThread implements Runnable{
 		requestMap.put(EXITRequest.KEY, new EXITRequest(new exitCallbackClass()));
 		requestMap.put(SETRequest.KEY, new SETRequest(game));
 		requestMap.put(TICKRequest.KEY, new TICKRequest(tickCallbackClass));
+		requestMap.put(DELRequest.KEY, new DELRequest(game));
 	}
 
 	private Request getRequest(String key) {

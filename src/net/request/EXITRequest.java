@@ -2,9 +2,6 @@ package net.request;
 
 import java.util.StringTokenizer;
 
-import entity.Snake;
-import game.Game;
-
 /**
  * 
  * Request is sent when client exits game. The client's entity is removed from the game.

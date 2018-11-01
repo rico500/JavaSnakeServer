@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,13 +31,18 @@ public class Game implements Runnable{
 	 ************************************************************************/
 	
 	/** Set entities in game */
-	HashMap<Integer, Entity> entityMap = new HashMap<Integer, Entity>();
+	private HashMap<Integer, Entity> entityMap = new HashMap<Integer, Entity>();
 	
 	/** List of listening instances implementing GameListener*/
-	ArrayList<GameListener> listenerList = new ArrayList<GameListener>();
+	private ArrayList<GameListener> listenerList = new ArrayList<GameListener>();
 	
 	/** Timer to schedule gameSteps */
-	Timer timer;
+	private Timer timer;
+	
+	/** Lists of modified/added/deleted entities */
+	private ArrayList<Entity> addedEntity = new ArrayList<Entity>();
+	private ArrayList<Entity> removedEntity = new ArrayList<Entity>();
+	private ArrayList<Entity> modifiedEntity = new ArrayList<Entity>();
 	
 	/************************************************************************
 	 * 
@@ -55,14 +61,19 @@ public class Game implements Runnable{
 	public void addEntity(int ID, Entity e) {
 		e.setID(ID);
 		entityMap.put(ID, e);
+		addedEntity.add(e);
 	}
 	
-	public boolean removeEntity(int ID, Entity e) {
-		return entityMap.remove(ID, e);
+	public void removeEntity(int ID) {
+		 Entity tmpEntity = entityMap.remove(ID);
+		 if(tmpEntity == null) {
+			 System.err.println("Warning: Entity with ID " + ID + " is not part of the game but was requested to be removed.");
+		 } else
+			 removedEntity.add(tmpEntity);
 	}
-	
-	public boolean removeEntity(Entity e) {
-		return entityMap.remove(e.getID(), e);
+
+	public void removeEntity(Entity e) {
+		removeEntity(e.getID());
 	}
 	
 	public Entity getFirstEntity() {
@@ -84,6 +95,33 @@ public class Game implements Runnable{
 	
 	public void addListener(GameListener listener) {
 		listenerList.add(listener);
+	}
+	
+	public void removeListener(GameListener listener) {
+		listenerList.remove(listener);
+	}
+	
+	public void addModifiedEntity(Entity e){
+		if(!modifiedEntity.contains(e))
+			modifiedEntity.add(e);
+	}
+	
+	public ArrayList<Entity> getAddedEntity(){
+		return addedEntity;
+	}
+	
+	public ArrayList<Entity> getRemovedEntity(){
+		return removedEntity;
+	}
+	
+	public ArrayList<Entity> getModifiedEntity(){
+		return modifiedEntity;
+	}
+	
+	public void clearAllModLists() {
+		addedEntity.clear();
+		removedEntity.clear();
+		modifiedEntity.clear();
 	}
 	
 	/************************************************************************
@@ -148,6 +186,9 @@ public class Game implements Runnable{
 		// call listeners
 		notifyListeners();
 		
+		// clear modification lists
+		clearAllModLists();
+		
 		timer.schedule(new GameTimerTask(this), TIME_STEP);
 	}
 	
@@ -190,27 +231,44 @@ public class Game implements Runnable{
 			// Check if the challenger is a playable entity (which can die on contact)
 			if(challenger.isPlayable()) {
 				
-				// temporarily save head of entity
-				Cell head = challenger.getCellList().get(0);
+				// temporarily save head of challenging entity
+				Cell challengerHead = challenger.getCellList().get(0);
 				
 				// Check if the head is found at the same location as other entities or
 				// is out of bounds 
 				for(Entity defender : entityMap.values()) {
-
+					
 					// if it is found at the location of another entity...
-					if(!defender.equals(challenger) && defender.getCellList().contains(head)) {
+					if(defender.getCellList().contains(challengerHead)) {
 
-						// ... save a reference to the entities and their contact 
-						// location
-						contactList.add(new ContactPair(challenger, defender, head));
-					} else
-
-						// if the head is out of bounds save a refernce to it and the 
-						// location of trespassing
-						if(isOutOfBounds(head)) {
-							contactList.add(new ContactPair(challenger, null, head));
+						// Check that defender is a different entity from the attacker
+						if(!defender.equals(challenger)) {
+							
+							// save the colliding entities and their location
+							contactList.add(new ContactPair(challenger, defender, challengerHead));
+							
+						} 
+						
+						// If it is infact the same entity... 
+						else {
+							
+							// check if the collision location is not the head of the same entity
+							if(Collections.frequency(defender.getCellList(), challengerHead)>1) {
+								
+								// save the collision location
+								contactList.add(new ContactPair(challenger, defender, challengerHead));
+							
+							}
 						}
+					}
 				}
+				
+				// if the head is out of bounds save a reference to it and the 
+				// location of trespassing
+				if(isOutOfBounds(challengerHead)) {
+					contactList.add(new ContactPair(challenger, null, challengerHead));
+				}
+				
 			}
 		}
 		
@@ -233,9 +291,9 @@ public class Game implements Runnable{
 					contact.getDefender() == null) {
 				// The challenging snake dies and is removed from the list
 				removeEntity(contact.getChallenger());
-				System.out.println("Contact between challenging snake " + contact.getChallenger()
-				+ " and wall.");
-				System.out.println("Snake " + contact.getChallenger() + " dies.");
+				System.out.println("Contact between challenging " + contact.getChallenger()
+				+ "and wall.");
+				System.out.println(contact.getChallenger() + " dies.");
 
 			} else 
 				
@@ -244,9 +302,9 @@ public class Game implements Runnable{
 				contact.getDefender().getClass() == Snake.class) {
 					// The out-of-bounds snake dies and is removed from the list
 					removeEntity(contact.getChallenger());
-					System.out.println("Contact between challenging snake " + contact.getChallenger()
-					+ " and defending snake " + contact.getDefender());
-					System.out.println("Snake " + contact.getChallenger() + " dies.");
+					System.out.println("Contact between challenging " + contact.getChallenger()
+					+ "and defending " + contact.getDefender());
+					System.out.println(contact.getChallenger() + " dies.");
 
 				}
 			else

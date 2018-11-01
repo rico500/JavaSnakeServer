@@ -3,8 +3,6 @@ package net.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import entity.Snake;
 import game.Game;
@@ -12,10 +10,8 @@ import gui.EventDrivenGameFrame;
 import javafx.scene.paint.Color;
 import mouvement.Directions;
 import mouvement.StraightMouvement;
-import net.request.PUTRequest;
-import net.request.Request;
 
-public class Server {
+public class ServerSynchroTest {
 
 	private static Game game;
 	
@@ -48,13 +44,13 @@ public class Server {
 		
 		// Start game
 		game = new Game();
-		game.startGame();
 		
-		// Initialize Client counter
-		int counter = 1;
+		Directions[] dirArray = {Directions.EAST, Directions.WEST};
+		int[] xArray = {0, EventDrivenGameFrame.GRID_SIZE};
+		int[] yArray = {EventDrivenGameFrame.GRID_SIZE/2, EventDrivenGameFrame.GRID_SIZE/2};
 		
 		// Accept clients as they come
-		while(true) {
+		for(int counter = 1; counter < 3; counter++) {
 			// wait for client to connect
 			Socket clientComSocket = acceptSocket.accept();
 			
@@ -63,14 +59,14 @@ public class Server {
 			// assign new snake to client
 			// TODO Put new snake in a position with no other snakes
 			// TODO Assign logical initial direction
-			Snake snake = new Snake(new StraightMouvement(Directions.NORTH), EventDrivenGameFrame.GRID_SIZE/2, EventDrivenGameFrame.GRID_SIZE/2, COLOR_ARRAY[(counter-1)%5]);
+			Snake snake = new Snake(new StraightMouvement(dirArray[counter-1]), xArray[counter-1], yArray[counter-1], COLOR_ARRAY[(counter-1)%5]);
 			
 			// add snake to game simulation
 			// TODO add unique ID finder
 			game.addEntity(counter, snake);
 			
 			// initialize thread that will take care of client
-			ServerThread st = new ServerThread(clientComSocket, game, snake);
+			ServerSynchroThread st = new ServerSynchroThread(clientComSocket, game, snake);
 			
 			// launch thread
 			new Thread(st).start();
@@ -79,10 +75,11 @@ public class Server {
 			
 			// add serverThread as a game listener
 			game.addListener(st);
-			
-			// increment entity counter
-			counter ++;
 		}
+		
+		game.startGame();
+		
 	}
 
+	
 }

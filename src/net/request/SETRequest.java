@@ -63,7 +63,7 @@ public class SETRequest extends Request {
 	
 	@Override
 	public void handleRequest(StringTokenizer st) {
-		
+
 		// Parse request
 		String entityType = st.nextToken();	
 		int entityID = Integer.parseInt(st.nextToken());
@@ -77,6 +77,7 @@ public class SETRequest extends Request {
 			if(mouvToSet.getClass() == StraightMouvement.class) {
 				StraightMouvement strMouvToSet = (StraightMouvement) mouvToSet;
 				strMouvToSet.setDirection(dir);
+				game.addModifiedEntity(snakeToSet);
 			} else {
 				throw new RuntimeException("In SET request for entity of type Snake, "
 						+ "only straight mouvement types may be modified.");

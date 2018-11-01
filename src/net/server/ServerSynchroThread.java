@@ -19,7 +19,7 @@ import net.request.Request;
 import net.request.SETRequest;
 import net.request.TICKRequest;
 
-public class ServerThread implements Runnable, GameListener {
+public class ServerSynchroThread implements Runnable, GameListener {
 
 	/************************************************************************
 	 * 
@@ -54,7 +54,7 @@ public class ServerThread implements Runnable, GameListener {
 	 * 
 	 ************************************************************************/
 	
-	public ServerThread(Socket clientComSocket, Game game, Snake snake) throws IOException {
+	public ServerSynchroThread(Socket clientComSocket, Game game, Snake snake) throws IOException {
 		
 		this.clientComSocket = clientComSocket;
 		
@@ -97,13 +97,10 @@ public class ServerThread implements Runnable, GameListener {
 		
 		// Clients are informed of any added entities by a put request
 		for(Entity e : game.getAddedEntity()) {
-				
-			// in case one of the added entities is the client's snake itself,
-			// ignore that snake
-			if(!e.equals(snake)) {
-				outToClient.println(new PUTRequest(e).createRequest());
-				outToClient.flush();
-			}
+
+			outToClient.println(new PUTRequest(e).createRequest());
+			outToClient.flush();
+
 		}
 		
 		// Clients are informed of any removed entities by a DELRequest
@@ -136,18 +133,6 @@ public class ServerThread implements Runnable, GameListener {
 		
 		// Initialize request map
 		initializeRequestMap(game);
-		
-		// the first sent snake is the client's snake
-		outToClient.println(new PUTRequest(snake).createRequest());
-		outToClient.flush();
-		
-		// all following entities are other entities of the game
-		for(Entity e : game.getEntityMap().values()) {
-			if(!e.equals(snake)) {
-				outToClient.println(new PUTRequest(e).createRequest());
-				outToClient.flush();
-			}
-		}
 		
 		System.out.println("Client " + snake.getID() + " successfully initialized game.");
 		
@@ -196,7 +181,6 @@ public class ServerThread implements Runnable, GameListener {
 	}
 	
 	private void closeConnection() throws IOException{
-		game.removeListener(this);
 		clientComSocket.close();
 	}
 
