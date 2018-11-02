@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 
 import entity.Snake;
 import game.Game;
+import mouvement.StraightMouvement;
 import net.request.DELRequest;
 import net.request.EXITRequest;
 import net.request.PUTRequest;
@@ -33,17 +34,21 @@ public class ClientThread implements Runnable{
 	
 	private Runnable tickCallbackClass;
 	
+	private String mouvementType;
+	
 	public ClientThread(Socket serverComSocket, Game game) throws IOException {
 		this.serverComSocket = serverComSocket;
 		this.game = game;
 		reader = new BufferedReader(new InputStreamReader(
 				serverComSocket.getInputStream()
 				)) ;
+		this.mouvementType = StraightMouvement.KEY;
 	}
 	
-	public ClientThread(Socket serverComSocket, Game game, Runnable tickCallbackClass) throws IOException {
+	public ClientThread(Socket serverComSocket, Game game, Runnable tickCallbackClass, String mouvementType) throws IOException {
 		this(serverComSocket, game);
 		this.tickCallbackClass = tickCallbackClass;
+		this.mouvementType = mouvementType;
 	}
 	
 	public Snake getSnake() {
@@ -62,7 +67,7 @@ public class ClientThread implements Runnable{
 			System.out.println( requestType.toUpperCase() + " request received.");
 
 			// Handle request
-			new PUTRequest(game).handleRequest(st);
+			new PUTRequest(game, mouvementType).handleRequest(st);
 			
 			// set client snake to first snake in game
 			snake = game.getFirstSnake();

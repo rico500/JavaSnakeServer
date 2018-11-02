@@ -4,10 +4,22 @@ import entity.Cell;
 
 public class StraightMouvement implements Mouvement {
 	
+	public static final String KEY = "STR";
+	
 	private Directions dir;
 
 	public StraightMouvement(Directions dir) {
 		this.dir = dir;
+	}
+	
+	@Override
+	public void computeNextDirection() {
+		
+	}
+	
+	@Override
+	public boolean directionHasChanged() {
+		return false;
 	}
 	
 	@Override
@@ -38,6 +50,7 @@ public class StraightMouvement implements Mouvement {
 		return dir;
 	}
 	
+	@Override
 	public void setDirection(Directions dir) {
 		this.dir = dir;
 	}

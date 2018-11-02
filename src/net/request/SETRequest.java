@@ -63,19 +63,13 @@ public class SETRequest extends Request {
 	@Override
 	public void handleRequest(StringTokenizer st) {
 
+		// parse request
 		int snakeID = Integer.parseInt(st.nextToken());
-
 		Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
+		
 		// Set new state
-		Snake snakeToSet  = game.getSnake(snakeID);
-		Mouvement mouvToSet = snakeToSet.getMouvement();
-		if(mouvToSet.getClass() == StraightMouvement.class) {
-			StraightMouvement strMouvToSet = (StraightMouvement) mouvToSet;
-			strMouvToSet.setDirection(dir);
-			game.addModifiedSnake(snakeToSet);
-		} else {
-			throw new RuntimeException("In SET request only straight mouvement types may be modified.");
-		}
+		game.getSnake(snakeID).getMouvement().setDirection(dir);
+		game.addModifiedSnake(game.getSnake(snakeID));
 	}
 
 	@Override

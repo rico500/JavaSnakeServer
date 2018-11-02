@@ -5,6 +5,8 @@ import java.util.Random;
 import entity.Cell;
 
 public class RandomMouvement implements Mouvement{
+	
+	public static final String KEY = "RND";
 
 	private static final int MAXSTEPS = 3;
 	
@@ -12,30 +14,41 @@ public class RandomMouvement implements Mouvement{
 	private int step = 1;
 	
 	private Directions dir;
+	private boolean dirChange = false;
 	
 	private Random random = new Random();
 	
-	public RandomMouvement() {
+	public RandomMouvement(Directions dir) {
 		this.nSteps = random.nextInt(MAXSTEPS)+1;
-		dir = Directions.getFromValue(random.nextInt(3));
+		this.dir = dir;
 	}
 	
 	@Override
-	public Cell computeNextCell(Cell head) {
-		
+	public void computeNextDirection() {
 		// Change direction every nSteps
 		if(step%nSteps == 0) {
 			step = 0;
 			nSteps = random.nextInt(MAXSTEPS)+1;
 			switch(random.nextInt(2)) {
-			
+
 			case(1):
 				dir = dir.turnLeft();
 			break;
 			case(2):
 				dir = dir.turnRight();
 			}
+			// there has been a change in direction
+			dirChange = true;
+		} else {
+			dirChange = false;
 		}
+		
+		// increment step
+		step++;
+	}
+	
+	@Override
+	public Cell computeNextCell(Cell head) {
 		
 		// Compute nextCell
 		Cell nextCell = null;
@@ -55,9 +68,6 @@ public class RandomMouvement implements Mouvement{
 		break;
 		}
 		
-		// reset head and increment step
-		step++;
-		
 		return nextCell;
 	}
 
@@ -66,4 +76,13 @@ public class RandomMouvement implements Mouvement{
 		return dir;
 	}
 	
+	@Override
+	public boolean directionHasChanged() {
+		return dirChange;
+	}
+	
+	@Override
+	public void setDirection(Directions dir) {
+		this.dir = dir;
+	}
 }

@@ -102,19 +102,9 @@ public class ServerThread implements Runnable, GameListener {
 		
 		// Clients are informed of any modified entities by a set request
 		for(Snake e : game.getModifiedSnake()) {
-			if(e.getClass() == Snake.class) {
-				Snake snakeToSet = (Snake) e;
-				outToClient.println(new SETRequest(game,snakeToSet, snakeToSet.getMouvement().getDirection()).createRequest());
-				outToClient.flush();
-			}
+			outToClient.println(new SETRequest(game, e, e.getMouvement().getDirection()).createRequest());
+			outToClient.flush();
 		}
-		
-//		// Clients are informed of any added entities by a put request
-//		for(Entity e : game.getAddedEntity()) {
-//				outToClient.println(new PUTRequest(e).createRequest());
-//				outToClient.flush();
-//
-//		}
 		
 		// Clients are informed of any removed entities by a DELRequest
 		for(Snake e : game.getRemovedSnake()) {

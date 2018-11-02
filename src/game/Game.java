@@ -39,7 +39,6 @@ public class Game implements Runnable{
 	private Timer timer;
 
 	/** Lists of modified/added/deleted entities */
-	private ArrayList<Snake> addedSnake = new ArrayList<Snake>();
 	private ArrayList<Snake> removedSnake = new ArrayList<Snake>();
 	private ArrayList<Snake> modifiedSnake = new ArrayList<Snake>();
 
@@ -60,7 +59,6 @@ public class Game implements Runnable{
 	public void addSnake(int ID, Snake e) {
 		e.setID(ID);
 		snakeMap.put(ID, e);
-		addedSnake.add(e);
 	}
 
 	public void removeSnake(int ID) {
@@ -105,10 +103,6 @@ public class Game implements Runnable{
 			modifiedSnake.add(e);
 	}
 
-	public ArrayList<Snake> getAddedSnake(){
-		return addedSnake;
-	}
-
 	public ArrayList<Snake> getRemovedSnake(){
 		return removedSnake;
 	}
@@ -118,7 +112,6 @@ public class Game implements Runnable{
 	}
 
 	public void clearAllModLists() {
-		addedSnake.clear();
 		removedSnake.clear();
 		modifiedSnake.clear();
 	}

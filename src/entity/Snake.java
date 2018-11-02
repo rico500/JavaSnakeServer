@@ -89,7 +89,9 @@ public class Snake {
 			startIndex = (snake.size()-1);
 		}
 			
+		mvmt.computeNextDirection();
 		Cell nextCell = mvmt.computeNextCell(snake.get(0));
+		
 		for (int i = startIndex; i>0; i--) {
 			snake.get(i).set(snake.get(i-1));
 		}

@@ -23,6 +23,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import mouvement.Directions;
+import mouvement.Mouvement;
+import mouvement.StraightMouvement;
 import net.client.ClientThread;
 import net.request.EXITRequest;
 import net.request.SETRequest;
@@ -73,6 +75,9 @@ public abstract class GameFrame extends Application implements Runnable{
 	
 	/** Thread to handle server requests */
 	private ClientThread clientThread;
+	
+	/** Flag indicating if the client is in bot or manual mode */
+	private boolean isBot = true;
 
 	// ***************************************************************************** //
 	// *                                                                           * //
@@ -89,18 +94,25 @@ public abstract class GameFrame extends Application implements Runnable{
 	 */
 	@Override
 	public void start(Stage primaryStage) throws UnknownHostException, IOException {
-		// Connect to Server
+		
+		// Parse arguments
 		List<String> args = getParameters().getRaw();
 		int port = Integer.parseInt(args.get(0));
 		String machine = args.get(1);
+		String mouvementType = args.get(2);
+		if(mouvementType.equals(StraightMouvement.KEY)) {isBot = false;}
+		
+		// connect to server
 		comSocket = new Socket(machine, port);
+		
+		// initialize character writer
 		writer = new PrintWriter(comSocket.getOutputStream());
-
+		
 		// start game
 		game = new Game();
 		
 		// start thread to handle server requests
-		clientThread = new ClientThread(comSocket, game, new TickEventHandler(this));
+		clientThread = new ClientThread(comSocket, game, new TickEventHandler(this), mouvementType);
 		new Thread(clientThread).start();
 		
 		// Create the root of the graph scene, and all its children 
@@ -211,6 +223,15 @@ public abstract class GameFrame extends Application implements Runnable{
 		
 		// Clear all modification lists
 		game.clearAllModLists();
+		
+		if(isBot) {
+			Mouvement nextMouv = clientThread.getSnake().getMouvement();
+			nextMouv.computeNextDirection();
+			if(nextMouv.directionHasChanged()) {
+				writer.println(new SETRequest(game, clientThread.getSnake(), nextMouv.getDirection()).createRequest());
+				writer.flush();
+			}
+		}
 	}
 	
 	public Collection<Node> computeNodeList() {

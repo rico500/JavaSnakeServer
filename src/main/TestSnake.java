@@ -2,6 +2,7 @@ package main;
 
 import entity.Snake;
 import javafx.scene.paint.Color;
+import mouvement.Directions;
 import mouvement.Mouvement;
 import mouvement.RandomMouvement;
 
@@ -9,7 +10,7 @@ public class TestSnake {
 
 	public static void main(String[] args) throws InterruptedException {
 		
-		Mouvement mvmt = new RandomMouvement();
+		Mouvement mvmt = new RandomMouvement(Directions.NORTH);
 		
 		Snake snake = new Snake(mvmt, 10, 10, Color.ALICEBLUE);
 		

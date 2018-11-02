@@ -6,6 +6,7 @@ import entity.Cell;
 import entity.Snake;
 import game.Game;
 import mouvement.Directions;
+import mouvement.Mouvement;
 import mouvement.StraightMouvement;
 
 import javafx.scene.paint.Color;
@@ -41,6 +42,7 @@ public class PUTRequest extends Request{
 	 ************************************************************************/
 	
 	Snake snakeToPut;
+	String mouvementType;
 
 	/************************************************************************
 	 * 
@@ -51,10 +53,17 @@ public class PUTRequest extends Request{
 	public PUTRequest(Snake snake) {
 		super(null);
 		this.snakeToPut = snake;
+		this.mouvementType = StraightMouvement.KEY;
 	}
 	
 	public PUTRequest(Game game) {
 		super(game);
+		this.mouvementType = StraightMouvement.KEY;
+	}
+	
+	public PUTRequest(Game game, String mouvementType) {
+		super(game);
+		this.mouvementType = mouvementType;
 	}
 
 	/************************************************************************
@@ -65,16 +74,17 @@ public class PUTRequest extends Request{
 	
 	@Override
 	public void handleRequest(StringTokenizer st) {
+		
+		// Parse request
 		int snakeID = Integer.parseInt(st.nextToken());
 		Color color = new Color(Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()),
 				Double.parseDouble(st.nextToken()));
-
-		Snake tmpSnake = null;
-
 		Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
-		tmpSnake = new Snake(new StraightMouvement(dir), color);
+		
+		// Construct snake entity
+		Snake tmpSnake = new Snake(Mouvement.getMouvementFromKey(mouvementType, dir), color);
 		while(st.hasMoreTokens())
 			tmpSnake.addCell(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 
