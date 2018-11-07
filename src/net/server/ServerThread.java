@@ -115,7 +115,6 @@ public class ServerThread implements Runnable, GameListener {
 			if(e.equals(snake)) {
 				outToClient.println(new EXITRequest().createRequest());
 				outToClient.flush();
-				isRunning = false;
 			} else {
 				outToClient.println(new DELRequest(e).createRequest());
 				outToClient.flush();

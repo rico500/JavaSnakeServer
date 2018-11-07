@@ -15,10 +15,7 @@ public class Snake {
 	 ************************************************************************/
 	
 	/** indicates number of steps before the snake grows by one cell */
-	private static final int GROW_RATE = 4;
-	
-	/** key string */
-	public static final String KEY = "SNAKE";
+	private static final int GROW_RATE = 3;
 	
 	/************************************************************************
 	 * 
@@ -32,9 +29,19 @@ public class Snake {
 	/** unique ID to identify identity between server and client */
 	private int ID;
 	
+	/** list of cells belonging to this snake */
 	private ArrayList<Cell> snake = new ArrayList<Cell>();
+	
+	/** Reference to mouvement object containing logic to compute
+	 * the snake's next step
+	 */
 	private Mouvement mvmt;
+	
+	/** Snake's color */
 	private final Color color;
+	
+	/** Flag indicating if the snake is alive or not. If it is dead it will stay static*/
+	private boolean isAlive = true;
 	
 	/************************************************************************
 	 * 
@@ -59,7 +66,7 @@ public class Snake {
 	
 	/************************************************************************
 	 * 
-	 * CLASS METHODS
+	 * PUBLIC METHODS
 	 * 
 	 ************************************************************************/
 	
@@ -71,6 +78,14 @@ public class Snake {
 		this.mvmt =  mvmt;
 	}
 	
+	public void dies() {
+		isAlive = false;
+	}
+	
+	public boolean isAlive() {
+		return isAlive;
+	}
+	
 	public ArrayList<Cell> getCellList(){
 		return snake;
 	}
@@ -79,54 +94,32 @@ public class Snake {
 		return color;
 	}
 	
-	public String getKey() {
-		return KEY;
-	}
-	
 	public void addCell(int x, int y) {
 		snake.add(new Cell(x, y));
 	}
 	
 	public void evolve() {
-		int startIndex;
-		if(step%GROW_RATE == 0) {
-			step = 1;
-			snake.add(snake.get(snake.size()-1).clone());
-			startIndex = (snake.size()-2);
-		} else {
-			startIndex = (snake.size()-1);
+		if(isAlive) {
+			int startIndex;
+			if(step%GROW_RATE == 0) {
+				step = 1;
+				snake.add(snake.get(snake.size()-1).clone());
+				startIndex = (snake.size()-2);
+			} else {
+				startIndex = (snake.size()-1);
+			}
+
+			//mvmt.computeNextDirection();
+			Cell nextCell = mvmt.computeNextCell(snake.get(0));
+
+			for (int i = startIndex; i>0; i--) {
+				snake.get(i).set(snake.get(i-1));
+			}
+			snake.get(0).set(nextCell);
+
+			step++;
 		}
-			
-		//mvmt.computeNextDirection();
-		Cell nextCell = mvmt.computeNextCell(snake.get(0));
-		
-		for (int i = startIndex; i>0; i--) {
-			snake.get(i).set(snake.get(i-1));
-		}
-		snake.get(0).set(nextCell);
-		
-		step++;
 	}
-	
-//	public ArrayList<Cell> getCellsWithX(int x) {
-//		ArrayList<Cell> foundCellList = new ArrayList<Cell>();
-//		for(Cell c : snake) {
-//			if(c.getX() == x) {
-//				foundCellList.add(c);
-//			}
-//		}
-//		return foundCellList;
-//	}
-//	
-//	public ArrayList<Cell> getCellsWithY(int y) {
-//		ArrayList<Cell> foundCellList = new ArrayList<Cell>();
-//		for(Cell c : snake) {
-//			if(c.getY() == y) {
-//				foundCellList.add(c);
-//			}
-//		}
-//		return foundCellList;
-//	}
 	
 	public void setID(int ID) {
 		this.ID = ID; 

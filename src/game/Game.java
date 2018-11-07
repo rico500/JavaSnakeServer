@@ -22,7 +22,7 @@ public class Game implements Runnable{
 	public static final int GRID_SIZE = 24;
 
 	/** Game speed */
-	public static final long TIME_STEP = 1000L;
+	public static final long TIME_STEP = 500L;
 
 	/************************************************************************
 	 * 
@@ -63,11 +63,11 @@ public class Game implements Runnable{
 	}
 
 	public void removeSnake(int ID) {
-		Snake tmpSnake = snakeMap.remove(ID);
-		if(tmpSnake == null) {
-			System.err.println("Warning: Snake with ID " + ID + " is not part of the game but was requested to be removed.");
-		} else
-			removedSnake.add(tmpSnake);
+		snakeMap.get(ID).dies();
+//		if(tmpSnake == null) {
+//			System.err.println("Warning: Snake with ID " + ID + " is not part of the game but was requested to be removed.");
+//		} else
+		removedSnake.add(snakeMap.get(ID));
 	}
 
 	public void removeSnake(Snake e) {
@@ -223,43 +223,48 @@ public class Game implements Runnable{
 		// Check each snake for contacts with other snake or frame bounds 
 		for(Snake challenger : snakeMap.values()) {
 
-			// temporarily save head of challenging snake
-			Cell challengerHead = challenger.getCellList().get(0);
+			// Check that the challenging snake is alive to avoid any redundant 
+			// computations
+			if(challenger.isAlive()) {
 
-			// Check if the head is found at the same location as other entities or
-			// is out of bounds 
-			for(Snake defender : snakeMap.values()) {
+				// temporarily save head of challenging snake
+				Cell challengerHead = challenger.getCellList().get(0);
 
-				// if it is found at the location of another snake...
-				if(defender.getCellList().contains(challengerHead)) {
+				// Check if the head is found at the same location as other entities or
+				// is out of bounds 
+				for(Snake defender : snakeMap.values()) {
 
-					// Check that defender is a different snake from the attacker
-					if(!defender.equals(challenger)) {
+					// if it is found at the location of another snake...
+					if(defender.getCellList().contains(challengerHead)) {
 
-						// save the colliding entities and their location
-						contactList.add(new ContactPair(challenger, defender, challengerHead));
+						// Check that defender is a different snake from the attacker
+						if(!defender.equals(challenger)) {
 
-					} 
-
-					// If it is infact the same snake... 
-					else {
-
-						// check if the collision location is not the head of the same snake
-						if(Collections.frequency(defender.getCellList(), challengerHead)>1) {
-
-							// save the collision location
+							// save the colliding entities and their location
 							contactList.add(new ContactPair(challenger, defender, challengerHead));
 
+						} 
+
+						// If it is infact the same snake... 
+						else {
+
+							// check if the collision location is not the head of the same snake
+							if(Collections.frequency(defender.getCellList(), challengerHead)>1) {
+
+								// save the collision location
+								contactList.add(new ContactPair(challenger, defender, challengerHead));
+
+							}
 						}
 					}
-				}
 
-				// if the head is out of bounds save a reference to it and the 
-				// location of trespassing
-				if(isOutOfBounds(challengerHead)) {
-					contactList.add(new ContactPair(challenger, null, challengerHead));
-				}
+					// if the head is out of bounds save a reference to it and the 
+					// location of trespassing
+					if(isOutOfBounds(challengerHead)) {
+						contactList.add(new ContactPair(challenger, null, challengerHead));
+					}
 
+				}
 			}
 		}
 

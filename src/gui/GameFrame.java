@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -91,7 +92,7 @@ public abstract class GameFrame extends Application {
 	// *                         DO NOT EDIT PAST HERE                             * //
 	// *                                                                           * //
 	// ***************************************************************************** //
-
+	
 	/** 
 	 * Initialize the graphical display.
 	 *
@@ -131,12 +132,13 @@ public abstract class GameFrame extends Application {
 		Scene scene = new Scene(root, WINDOW_SIZE, WINDOW_SIZE, BG_COLOR);
 		
 		// add a KeyEvent listener to the scene
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent event) {
-				keyEventHandler(event);
-			} 
-		});
-		
+		if(!isBot) {
+			scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+				public void handle(KeyEvent event) {
+					keyEventHandler(event);
+				} 
+			});
+		}
 		// terminate the Application when the window is closed
 		primaryStage.setOnCloseRequest(event -> { exitEventHandler(); Platform.exit(); System.exit(0); } );
 
@@ -300,8 +302,23 @@ public abstract class GameFrame extends Application {
 		// take care of rearranging data on current state of game to display it
 		ArrayList<Node> nodeList = new ArrayList<Node>();
 		for(Snake e : game.getSnakeMap().values()) {
-			for(Cell c : e.getCellList())
-			nodeList.add(new DisplayableCell(c.getX(), c.getY(), ELEMENT_SIZE ,e.getColor()));
+			
+			Iterator<Cell> cellIterator = e.getCellList().iterator();
+			Cell nextCell = cellIterator.next();
+			if(e.isAlive()) {
+				nodeList.add(new DisplayableSnakeHead(nextCell.getX(), nextCell.getY(), e.getMouvement().getDirection(),e.getColor()));
+			}else {
+				nodeList.add(new DisplayableSnakeHead(nextCell.getX(), nextCell.getY(), e.getMouvement().getDirection(),Color.DARKGRAY));
+			}
+			while(cellIterator.hasNext()) {
+				nextCell = cellIterator.next();	
+				if(e.isAlive()) {
+					nodeList.add(new DisplayableCell(nextCell.getX(), nextCell.getY(),e.getColor()));
+				}else {
+					nodeList.add(new DisplayableCell(nextCell.getX(), nextCell.getY(), Color.DARKGRAY));
+				}
+
+			}
 		}
 		return nodeList;
 	}

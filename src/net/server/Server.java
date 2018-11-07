@@ -18,18 +18,10 @@ public class Server {
 	public static void main(String[] args) throws IOException {
 		
 		// Create game constants
-		final int playerN = 2;
-		final Color[] COLOR_ARRAY = {Color.ALICEBLUE, Color.GOLD};
-		final Directions[] dirArray = {Directions.EAST, Directions.WEST};
-		final int[] xArray = {0, GameFrame.GRID_SIZE};
-		final int[] yArray = {GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2};
-		
-//		// Create game constants
-//		final int playerN = 4;
-//		final Color[] COLOR_ARRAY = {Color.ALICEBLUE, Color.GOLD, Color.LAVENDER, Color.MEDIUMVIOLETRED};
-//		final Directions[] dirArray = {Directions.EAST, Directions.WEST, Directions.NORTH, Directions.SOUTH};
-//		final int[] xArray = {3, GameFrame.GRID_SIZE-3, GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2};
-//		final int[] yArray = {GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2, 0, GameFrame.GRID_SIZE};
+		final Color[] COLOR_ARRAY = {Color.ALICEBLUE, Color.GOLD, Color.LAVENDER, Color.MEDIUMVIOLETRED};
+		final Directions[] dirArray = {Directions.EAST, Directions.WEST, Directions.NORTH, Directions.SOUTH};
+		final int[] xArray = {3, GameFrame.GRID_SIZE-3, GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2};
+		final int[] yArray = {GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2, 0, GameFrame.GRID_SIZE};
 		
 		// Read server listener port from launch arguments
 		int port;
@@ -56,6 +48,12 @@ public class Server {
 		
 		// Create game
 		Game game = new Game();
+		
+		// read number of desired players
+		final int playerN = Integer.parseInt(args[2]);
+		if(playerN > 4 || playerN < 2) {
+			throw new IllegalArgumentException("Allowed number of players between 2 and 4, you required "+ playerN);
+		}
 		
 		for(int counter = 1; counter < playerN+1; counter++) {
 			// assign new snake to client

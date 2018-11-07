@@ -13,7 +13,7 @@ import mouvement.Directions;
  * 
  * The syntax is :
  * 
- * DEL EntityType ID
+ * DEL ID
  * 
  * @author ebrunner
  *
@@ -61,10 +61,9 @@ public class DELRequest extends Request{
 	public void handleRequest(StringTokenizer st) {
 		
 		// Parse request
-		String entityType = st.nextToken();	
 		int entityID = Integer.parseInt(st.nextToken());
 		
-		game.removeSnake(entityID);
+		game.getSnake(entityID).dies();
 		
 	}
 
@@ -74,8 +73,6 @@ public class DELRequest extends Request{
 		StringBuilder sb = new StringBuilder();
 		
 		sb.append(KEY);
-		sb.append(" ");
-		sb.append(snakeToDel.getKey());
 		sb.append(" ");
 		sb.append(snakeToDel.getID());
 		

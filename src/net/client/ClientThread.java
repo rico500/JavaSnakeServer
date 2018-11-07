@@ -96,7 +96,7 @@ public class ClientThread implements Runnable{
 					getRequest(requestType).handleRequest(st);
 				}
 			}
-			
+		 
 			closeConnection();
 			
 		} catch (IOException e) {
@@ -131,10 +131,10 @@ public class ClientThread implements Runnable{
 	}
 	
 	private class exitCallbackClass implements Runnable {
-
+		
 		@Override
 		public void run() {		
-			isRunning = false;
+			snake.dies();
 		}
 		
 	}
