@@ -29,7 +29,7 @@ import net.client.ClientThread;
 import net.request.EXITRequest;
 import net.request.SETRequest;
 
-public abstract class GameFrame extends Application implements Runnable{
+public abstract class GameFrame extends Application {
 
 	// ***************************************************************************** //
 	// *                                                                           * //
@@ -78,6 +78,13 @@ public abstract class GameFrame extends Application implements Runnable{
 	
 	/** Flag indicating if the client is in bot or manual mode */
 	private boolean isBot = true;
+	
+	/** Flag indicating  if the client is in Tick phase */
+	private boolean isTick = false;
+	
+	/** Temporary direction variable to store any snake direction update sent during the 
+	 * tick phase */
+	private Directions pendingDir = null;
 
 	// ***************************************************************************** //
 	// *                                                                           * //
@@ -112,7 +119,9 @@ public abstract class GameFrame extends Application implements Runnable{
 		game = new Game();
 		
 		// start thread to handle server requests
-		clientThread = new ClientThread(comSocket, game, new TickEventHandler(this), mouvementType);
+		clientThread = new ClientThread(comSocket, game, mouvementType);
+		clientThread.setTickCallbackClass(new TickEventHandler(new TickEventTask()));
+		clientThread.setTockCallbackClass(new TockEventHandler(new TockEventTask()));
 		new Thread(clientThread).start();
 		
 		// Create the root of the graph scene, and all its children 
@@ -150,6 +159,7 @@ public abstract class GameFrame extends Application implements Runnable{
 		} catch (IOException e) {
 			System.err.println("IOException occured while closing socket.");
 		}
+		Platform.exit();
 	}
 
 	public void keyEventHandler(KeyEvent event) {
@@ -184,53 +194,105 @@ public abstract class GameFrame extends Application implements Runnable{
 			
 			// If all conditions are fulfilled, communicate new direction to server
 			if(isKnown == true  && !isAligned) {
-				CurrentDir = DesiredDir;
-				writer.println(new SETRequest(game, snakeToUpdate, CurrentDir).createRequest());
-				writer.flush();
-			}
+				if(!isTick) {
+					writer.println(new SETRequest(game, snakeToUpdate, DesiredDir).createRequest());
+					writer.flush();
+				} else {
+					pendingDir = DesiredDir;
+				}
+			} 
 		}
 	}
 	
 	private class TickEventHandler implements Runnable {
 		
-		Runnable gameFrame;
+		Runnable eventTask;
 		
-		public TickEventHandler(Runnable gameFrame) {
-			this.gameFrame = gameFrame;
+		public TickEventHandler(Runnable eventTask) {
+			this.eventTask = eventTask;
 		}
 		
 		@Override
 		public void run() {
-			Platform.runLater(gameFrame);
+			Platform.runLater(eventTask);
 		}
 	}
 	
-	/**
-	 * 
-	 * The runnable method is called whenever the server sends a TICK request
-	 * indicating that the client has all the information to compute the next step of
-	 * the game. All clients must complete the game step before starting to gather
-	 * information for the next one.
-	 * 
-	 */
-	@Override
-	public void run() {
-		// update entity locations based on indications from server
-		game.update();
+	private class TickEventTask implements Runnable {
+		/**
+		 * 
+		 * The runnable method is called whenever the server sends a TICK request
+		 * indicating that the client has all the information to compute the next step of
+		 * the game. All clients must complete the game step before starting to gather
+		 * information for the next one.
+		 * 
+		 */
+		@Override
+		public void run() {
+			
+			// client enters tick phase
+			isTick = true;
+			
+			// update entity locations based on indications from server
+			game.update();
+
+			// display entities
+			root.getChildren().setAll(computeNodeList());
+
+			// Clear all modification lists
+			game.clearAllModLists();
+
+		}
+	}
+	
+	private class TockEventHandler implements Runnable {
 		
-		// display entities
-		root.getChildren().setAll(computeNodeList());
+		Runnable eventTask;
 		
-		// Clear all modification lists
-		game.clearAllModLists();
+		public TockEventHandler(Runnable eventTask) {
+			this.eventTask = eventTask;
+		}
 		
-		if(isBot) {
-			Mouvement nextMouv = clientThread.getSnake().getMouvement();
-			nextMouv.computeNextDirection();
-			if(nextMouv.directionHasChanged()) {
-				writer.println(new SETRequest(game, clientThread.getSnake(), nextMouv.getDirection()).createRequest());
-				writer.flush();
+		@Override
+		public void run() {
+			Platform.runLater(eventTask);
+		}
+	}
+	
+	private class TockEventTask implements Runnable {
+		/**
+		 * 
+		 * The runnable method is called whenever the server sends a TOCK request
+		 * indicating that all clients have finished updating their game with information
+		 * from the server. The client may now send back information concerning the next game
+		 * step.
+		 * 
+		 */
+		@Override
+		public void run() {
+			
+			// If the client is a bot, then now is the time to send information on 
+			// the bot's next action.
+			if(isBot) {
+				Mouvement nextMouv = clientThread.getSnake().getMouvement();
+				nextMouv.computeNextDirection();
+				if(nextMouv.directionHasChanged()) {
+					writer.println(new SETRequest(game, clientThread.getSnake(), nextMouv.getDirection()).createRequest());
+					writer.flush();
+				}
+				
+				// if the client isn't a bot, send any pending direction updates that may
+				// have been entered by the user
+			} else {
+				if(pendingDir != null) {
+					writer.println(new SETRequest(game, clientThread.getSnake(), pendingDir).createRequest());
+					writer.flush();
+					pendingDir = null;
+				}
 			}
+			
+			// client exits tick phase by completing tock logic
+			isTick = false;
 		}
 	}
 	

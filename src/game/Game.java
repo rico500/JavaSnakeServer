@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import entity.Cell;
 import entity.Snake;
+import mouvement.Directions;
 
 public class Game implements Runnable{
 
@@ -176,10 +177,12 @@ public class Game implements Runnable{
 		handleContacts();
 
 		// call listeners
-		notifyListeners();
+		runListenerGameStep();
 
 		// clear modification lists
 		clearAllModLists();
+		
+		runListenerRequestState();
 
 		timer.schedule(new GameTimerTask(this), TIME_STEP);
 	}
@@ -311,8 +314,44 @@ public class Game implements Runnable{
 	 * @return boolean Returns true if the cell is out of bounds
 	 * 
 	 */
-	private boolean isOutOfBounds(Cell head) {
+	public boolean isOutOfBounds(Cell head) {
 		return (head.getX()>=GRID_SIZE || head.getY()>=GRID_SIZE || head.getX()<0 || head.getY()<0);
+	}
+	
+	/**
+	 * 
+	 * Checks if the cell provided as an argument is occupied by another snake
+	 * 
+	 * @param checkCell - cell object referring to the tested cell
+	 * @return boolean - true if the cell is occupied, false otherwise
+	 */
+	public boolean cellIsOccupied(Cell checkCell) {
+		for(Snake s : snakeMap.values()) {
+			if(s.getCellList().contains(checkCell)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 * Checks if the cell provided as an argument will be probably occupied in the next
+	 * game step. The check only applies to the future position of the snake's head 
+	 * based on the current value of its heading. 
+	 * 
+	 * @param checkCell - cell object referring to the tested cell
+	 * @param excludeSnake - Snake to be excluded from the check (generally the client's snake)
+	 * @return boolean - true if the cell could be occupied during the next turn, false otherwise 
+	 */
+	public boolean cellIsReserved(Cell checkCell, Snake excludeSnake) {
+		for(Snake s : snakeMap.values()) {
+			if(s.getMouvement().computeNextCell(s.getCellList().get(0)).equals(checkCell)  
+					&& !s.equals(excludeSnake)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/************************************************************************
@@ -321,9 +360,15 @@ public class Game implements Runnable{
 	 * 
 	 ************************************************************************/
 
-	private void notifyListeners() {
+	private void runListenerGameStep() {
 		for(GameListener gl : listenerList) {
 			gl.gameStepJob(this);
+		}
+	}
+	
+	private void runListenerRequestState() {
+		for(GameListener gl : listenerList) {
+			gl.requestStateJob();
 		}
 	}
 }

@@ -65,7 +65,7 @@ public class PUTRequest extends Request{
 		super(game);
 		this.mouvementType = mouvementType;
 	}
-
+	
 	/************************************************************************
 	 * 
 	 * PUBLIC METHODS
@@ -84,11 +84,13 @@ public class PUTRequest extends Request{
 		Directions dir = Directions.getFromValue(Integer.parseInt(st.nextToken()));
 		
 		// Construct snake entity
-		Snake tmpSnake = new Snake(Mouvement.getMouvementFromKey(mouvementType, dir), color);
+		Snake tmpSnake = new Snake(color);
+		tmpSnake.setMouvement(Mouvement.getMouvementFromKey(mouvementType, dir, game, tmpSnake));
 		while(st.hasMoreTokens())
 			tmpSnake.addCell(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
 
 		game.addSnake(snakeID, tmpSnake);
+		
 	}
 
 	@Override

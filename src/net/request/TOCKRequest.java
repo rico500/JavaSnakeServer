@@ -2,22 +2,20 @@ package net.request;
 
 import java.util.StringTokenizer;
 
-import game.Game;
-
 /**
  * 
- * Indicates to the client that it has received all necessary information
- * to ensure its version of the game is up to date with the server's
- * version of the game.
+ * Indicates to the client that all clients have finished updating their game and 
+ * that the client may send updates concerning the following game step.
  * 
  * The syntax is:
  * 
- * TICK
+ * TOCK
  * 
  * @author ebrunner
  *
  */
-public class TICKRequest extends Request{
+
+public class TOCKRequest extends Request{
 
 	/************************************************************************
 	 * 
@@ -25,7 +23,7 @@ public class TICKRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	public static final String KEY = "TICK";
+	public static final String KEY = "TOCK";
 	
 	/************************************************************************
 	 * 
@@ -33,21 +31,21 @@ public class TICKRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	Runnable tickCallBackClass;
+	Runnable tockCallBackClass;
 	
-	public TICKRequest(Runnable tickCallBackClass) {
+	public TOCKRequest(Runnable tockCallBackClass) {
 		super(null);
-		this.tickCallBackClass = tickCallBackClass;
+		this.tockCallBackClass = tockCallBackClass;
 	}
 	
-	public TICKRequest() {
+	public TOCKRequest() {
 		super(null);
 	}
 
 	@Override
 	public void handleRequest(StringTokenizer requestBody) {
 		// call tick request callback method
-		tickCallBackClass.run();
+		tockCallBackClass.run();
 	}
 
 	@Override

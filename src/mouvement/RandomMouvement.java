@@ -22,7 +22,7 @@ public class RandomMouvement implements Mouvement{
 		this.nSteps = random.nextInt(MAXSTEPS)+1;
 		this.dir = dir;
 	}
-	
+
 	@Override
 	public void computeNextDirection() {
 		// Change direction every nSteps

@@ -1,5 +1,7 @@
 package mouvement;
 import entity.Cell;
+import entity.Snake;
+import game.Game;
 
 public interface Mouvement {
 	
@@ -12,7 +14,7 @@ public interface Mouvement {
 	 * @param dir - initial direction to take
 	 * @return an object implementiing Mouvement
 	 */
-	public static Mouvement getMouvementFromKey(String key, Directions dir) {
+	public static Mouvement getMouvementFromKey(String key, Directions dir, Game game, Snake snake) {
 		
 		switch(key) {
 		
@@ -20,6 +22,10 @@ public interface Mouvement {
 			return new StraightMouvement(dir);
 		case(RandomMouvement.KEY):
 			return new RandomMouvement(dir);
+		case(RandomIntelligentMouvement.KEY):
+			return new RandomIntelligentMouvement(dir, game, snake);
+		case(VeryIntelligentMouvement.KEY):
+			return new VeryIntelligentMouvement(dir, game, snake);
 		default:
 			throw new IllegalArgumentException("Unknown mouvement key " + key + " .");
 		

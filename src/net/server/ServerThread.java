@@ -17,6 +17,7 @@ import net.request.PUTRequest;
 import net.request.Request;
 import net.request.SETRequest;
 import net.request.TICKRequest;
+import net.request.TOCKRequest;
 
 public class ServerThread implements Runnable, GameListener {
 
@@ -122,6 +123,12 @@ public class ServerThread implements Runnable, GameListener {
 		}
 		
 		outToClient.println(new TICKRequest().createRequest());
+		outToClient.flush();
+	}
+	
+	@Override
+	public void requestStateJob() {
+		outToClient.println(new TOCKRequest().createRequest());
 		outToClient.flush();
 	}
 	

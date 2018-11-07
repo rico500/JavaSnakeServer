@@ -16,6 +16,7 @@ import net.request.PUTRequest;
 import net.request.Request;
 import net.request.SETRequest;
 import net.request.TICKRequest;
+import net.request.TOCKRequest;
 
 public class ClientThread implements Runnable{
 
@@ -34,6 +35,8 @@ public class ClientThread implements Runnable{
 	
 	private Runnable tickCallbackClass;
 	
+	private Runnable tockCallbackClass;
+	
 	private String mouvementType;
 	
 	public ClientThread(Socket serverComSocket, Game game) throws IOException {
@@ -45,14 +48,21 @@ public class ClientThread implements Runnable{
 		this.mouvementType = StraightMouvement.KEY;
 	}
 	
-	public ClientThread(Socket serverComSocket, Game game, Runnable tickCallbackClass, String mouvementType) throws IOException {
+	public ClientThread(Socket serverComSocket, Game game, String mouvementType) throws IOException {
 		this(serverComSocket, game);
-		this.tickCallbackClass = tickCallbackClass;
 		this.mouvementType = mouvementType;
 	}
 	
 	public Snake getSnake() {
 		return snake;
+	}
+	
+	public void setTickCallbackClass(Runnable tickCallbackClass) {
+		this.tickCallbackClass = tickCallbackClass;
+	}
+	
+	public void setTockCallbackClass(Runnable tockCallbackClass) {
+		this.tockCallbackClass = tockCallbackClass;
 	}
 	
 	@Override
@@ -113,6 +123,7 @@ public class ClientThread implements Runnable{
 		requestMap.put(SETRequest.KEY, new SETRequest(game));
 		requestMap.put(TICKRequest.KEY, new TICKRequest(tickCallbackClass));
 		requestMap.put(DELRequest.KEY, new DELRequest(game));
+		requestMap.put(TOCKRequest.KEY, new TOCKRequest(tockCallbackClass));
 	}
 
 	private Request getRequest(String key) {

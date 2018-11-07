@@ -33,7 +33,7 @@ public class Snake {
 	private int ID;
 	
 	private ArrayList<Cell> snake = new ArrayList<Cell>();
-	private final Mouvement mvmt;
+	private Mouvement mvmt;
 	private final Color color;
 	
 	/************************************************************************
@@ -53,6 +53,10 @@ public class Snake {
 		snake.add(new Cell(x0, y0));
 	}
 	
+	public Snake(Color color) {
+		this.color = color;
+	}
+	
 	/************************************************************************
 	 * 
 	 * CLASS METHODS
@@ -61,6 +65,10 @@ public class Snake {
 	
 	public Mouvement getMouvement() {
 		return mvmt;
+	}
+	
+	public void setMouvement(Mouvement mvmt) {
+		this.mvmt =  mvmt;
 	}
 	
 	public ArrayList<Cell> getCellList(){
@@ -89,7 +97,7 @@ public class Snake {
 			startIndex = (snake.size()-1);
 		}
 			
-		mvmt.computeNextDirection();
+		//mvmt.computeNextDirection();
 		Cell nextCell = mvmt.computeNextCell(snake.get(0));
 		
 		for (int i = startIndex; i>0; i--) {
@@ -99,6 +107,26 @@ public class Snake {
 		
 		step++;
 	}
+	
+//	public ArrayList<Cell> getCellsWithX(int x) {
+//		ArrayList<Cell> foundCellList = new ArrayList<Cell>();
+//		for(Cell c : snake) {
+//			if(c.getX() == x) {
+//				foundCellList.add(c);
+//			}
+//		}
+//		return foundCellList;
+//	}
+//	
+//	public ArrayList<Cell> getCellsWithY(int y) {
+//		ArrayList<Cell> foundCellList = new ArrayList<Cell>();
+//		for(Cell c : snake) {
+//			if(c.getY() == y) {
+//				foundCellList.add(c);
+//			}
+//		}
+//		return foundCellList;
+//	}
 	
 	public void setID(int ID) {
 		this.ID = ID; 

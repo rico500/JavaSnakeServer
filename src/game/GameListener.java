@@ -15,5 +15,6 @@ public interface GameListener {
 	 * @param Game - reference to the game which sends out the notifications
 	 */
 	public void gameStepJob(Game game);
+	public void requestStateJob();
 	
 }

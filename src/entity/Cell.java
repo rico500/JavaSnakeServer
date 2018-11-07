@@ -51,6 +51,10 @@ public class Cell {
 			return false;
 	}
 	
+	public Cell getVectorTo(Cell c) {
+		return new Cell(c.getX()-x, c.getY()-y);
+	}
+	
 	public Cell clone() {
 		return new Cell(x, y);
 	}

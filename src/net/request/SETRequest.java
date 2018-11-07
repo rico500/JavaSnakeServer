@@ -70,6 +70,7 @@ public class SETRequest extends Request {
 		// Set new state
 		game.getSnake(snakeID).getMouvement().setDirection(dir);
 		game.addModifiedSnake(game.getSnake(snakeID));
+		System.out.println("Snake " + snakeID + " goes towards "+ dir.name());
 	}
 
 	@Override
