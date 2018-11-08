@@ -6,6 +6,15 @@ import javafx.scene.paint.Color;
 
 import mouvement.Mouvement;
 
+/**
+ * 
+ * The Snake class stores the representation of a snake made of a list of Cells.
+ * Methods are included to compute the next state of the snake based on its heading.
+ * Various movement types can be attached to the instance when it is constructed.
+ * 
+ * @author ebrunner
+ *
+ */
 public class Snake {
 	
 	/************************************************************************
@@ -15,7 +24,7 @@ public class Snake {
 	 ************************************************************************/
 	
 	/** indicates number of steps before the snake grows by one cell */
-	private static final int GROW_RATE = 3;
+	private static final int GROW_RATE = 2;
 	
 	/************************************************************************
 	 * 

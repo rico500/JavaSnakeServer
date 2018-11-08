@@ -50,7 +50,7 @@ public class Server {
 		Game game = new Game();
 		
 		// read number of desired players
-		final int playerN = Integer.parseInt(args[2]);
+		final int playerN = Integer.parseInt(args[1]);
 		if(playerN > 4 || playerN < 2) {
 			throw new IllegalArgumentException("Allowed number of players between 2 and 4, you required "+ playerN);
 		}
