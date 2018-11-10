@@ -1,8 +1,8 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-import game.Game;
 
 public abstract class Request {
 
@@ -12,9 +12,7 @@ public abstract class Request {
 	 * 
 	 ************************************************************************/
 	
-	/** Requests act on a game, thus a reference to the game 
-	 * must exist in every request */
-	protected Game game;
+	private PrintWriter writer;
 
 	/************************************************************************
 	 * 
@@ -22,8 +20,19 @@ public abstract class Request {
 	 * 
 	 ************************************************************************/
 	
-	public Request(Game game) {
-		this.game = game;
+	public Request(PrintWriter writer) {
+		this.writer = writer;
+	}
+	
+	/************************************************************************
+	 * 
+	 * PUBLIC METHOD
+	 * 
+	 ************************************************************************/
+	
+	public void sendMessage() {
+		writer.println(createRequest());
+		writer.flush();
 	}
 	
 	/************************************************************************

@@ -11,7 +11,6 @@ import gui.GameFrame;
 import javafx.scene.paint.Color;
 import mouvement.Directions;
 import mouvement.StraightMouvement;
-import net.request.PUTRequest;
 
 public class Server {
 	
@@ -55,14 +54,9 @@ public class Server {
 			throw new IllegalArgumentException("Allowed number of players between 2 and 4, you required "+ playerN);
 		}
 		
+		// add expected number of snakes to game
 		for(int counter = 1; counter < playerN+1; counter++) {
-			// assign new snake to client
-			// TODO Put new snake in a position with no other snakes
-			// TODO Assign logical initial direction
 			Snake snake = new Snake(new StraightMouvement(dirArray[counter-1]), xArray[counter-1], yArray[counter-1], COLOR_ARRAY[(counter-1)%5]);
-		
-			// add snake to game simulation
-			// TODO add unique ID finder
 			game.addSnake(counter, snake);
 		}
 		

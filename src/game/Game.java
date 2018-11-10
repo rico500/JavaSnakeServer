@@ -8,8 +8,16 @@ import java.util.TimerTask;
 
 import entity.Cell;
 import entity.Snake;
-import mouvement.Directions;
 
+/**
+ * 
+ * The Game contains all the playing snakes. It detects and handles collisions.
+ * It also has notification capacities. Especially if it is running on periodic timer
+ * (using game.start()). 
+ * 
+ * @author ebrunner
+ *
+ */
 public class Game implements Runnable{
 
 	/************************************************************************
@@ -29,7 +37,7 @@ public class Game implements Runnable{
 	 * ATTRIBUTES
 	 * 
 	 ************************************************************************/
-
+	
 	/** Set entities in game */
 	private HashMap<Integer, Snake> snakeMap = new HashMap<Integer, Snake>();
 
@@ -53,7 +61,7 @@ public class Game implements Runnable{
 
 	/************************************************************************
 	 * 
-	 * PUBLIC METHODS
+	 * PUBLIC GET/SET METHODS
 	 * 
 	 ************************************************************************/
 
@@ -64,9 +72,6 @@ public class Game implements Runnable{
 
 	public void removeSnake(int ID) {
 		snakeMap.get(ID).dies();
-//		if(tmpSnake == null) {
-//			System.err.println("Warning: Snake with ID " + ID + " is not part of the game but was requested to be removed.");
-//		} else
 		removedSnake.add(snakeMap.get(ID));
 	}
 
@@ -81,10 +86,6 @@ public class Game implements Runnable{
 
 	public Snake getSnake(int ID) {
 		return snakeMap.get(ID);
-	}
-
-	public Snake getSnake(Snake e) {
-		return snakeMap.get(e.getID());
 	}
 
 	public HashMap<Integer, Snake> getSnakeMap(){
@@ -171,9 +172,7 @@ public class Game implements Runnable{
 		// update all entities in game
 		update();
 
-		// Check and handle contacts.
-		// Some entities may disappear at this point because of death due to a
-		// collision.
+		// Check and handle contacts
 		handleContacts();
 
 		// call listeners
