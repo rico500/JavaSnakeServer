@@ -4,6 +4,14 @@ import java.util.Random;
 
 import entity.Cell;
 
+/**
+ * 
+ * This movement will randomly select a direction and evolve in 
+ * that direction during a random number of steps.
+ * 
+ * @author ebrunner
+ *
+ */
 public class RandomMouvement implements Mouvement{
 	
 	public static final String KEY = "RND";
@@ -84,5 +92,10 @@ public class RandomMouvement implements Mouvement{
 	@Override
 	public void setDirection(Directions dir) {
 		this.dir = dir;
+	}
+	
+	@Override
+	public void cancelDirChange() {
+		dirChange = false;
 	}
 }

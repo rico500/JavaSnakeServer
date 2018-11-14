@@ -1,15 +1,15 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 import entity.Snake;
 import game.Game;
-import mouvement.Directions;
 
 
 /**
  * 
- * Request to delete entity in game.
+ * Request to delete snake in game.
  * 
  * The syntax is :
  * 
@@ -35,6 +35,7 @@ public class DELRequest extends Request{
 	 ************************************************************************/
 	
 	private Snake snakeToDel;
+	private Game game;
 	
 	/************************************************************************
 	 * 
@@ -42,12 +43,26 @@ public class DELRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
+	/**
+	 * 
+	 * Use this constructor to handle a DEL request
+	 * 
+	 * @param game - reference to the game where the snake is to be deleted.
+	 */
 	public DELRequest(Game game) {
-		super(game);
+		super(null);
+		this.game = game;
 	}
 	
-	public DELRequest(Snake snakeToDel) {
-		super(null);
+	/**
+	 * 
+	 * Use this constructor to create a DEL request message and send it.
+	 * 
+	 * @param writer - writer object which will send the message.
+	 * @param snakeToDel - reference to the snake which must be deleted.
+	 */
+	public DELRequest(PrintWriter writer, Snake snakeToDel) {
+		super(writer);
 		this.snakeToDel = snakeToDel;
 	}
 	

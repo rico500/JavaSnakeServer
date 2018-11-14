@@ -5,22 +5,22 @@ import game.Game;
 
 /**
  * 
- * A mouvement computes the snake's heading based on logic defined in each movement's 
+ * A movement computes the snake's heading based on logic defined in each movement's 
  * implementation.
  * 
  * @author ebrunner
  *
  */
 public interface Mouvement {
-	
+
 	/**
 	 * 
-	 * Constructs the appropriate mouvement object based on the given key and passes 
+	 * Constructs the appropriate movement object based on the given key and passes 
 	 * an initial direction argument if needed
 	 * 
-	 * @param key - mouvement key, unique for each type of mouvement
+	 * @param key - movement key, unique for each type of movement
 	 * @param dir - initial direction to take
-	 * @return an object implementiing Mouvement
+	 * @return an object implementing Movement
 	 */
 	public static Mouvement getMouvementFromKey(String key, Directions dir, Game game, Snake snake) {
 		
@@ -34,6 +34,8 @@ public interface Mouvement {
 			return new RandomIntelligentMouvement(dir, game, snake);
 		case(VeryIntelligentMouvement.KEY):
 			return new VeryIntelligentMouvement(dir, game, snake);
+		case(SwissCrossMouvement.KEY):
+			return new SwissCrossMouvement(dir);
 		default:
 			throw new IllegalArgumentException("Unknown mouvement key " + key + " .");
 		
@@ -83,5 +85,12 @@ public interface Mouvement {
 	 * 
 	 */
 	public boolean directionHasChanged();
+	
+	/**
+	 * 
+	 * Put the dirChange flag to false if this flag exists in the implementing class.
+	 * 
+	 */
+	public void cancelDirChange();
 	
 }

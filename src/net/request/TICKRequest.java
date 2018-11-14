@@ -1,8 +1,7 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
-
-import game.Game;
 
 /**
  * 
@@ -35,13 +34,25 @@ public class TICKRequest extends Request{
 	
 	Runnable tickCallBackClass;
 	
+	/**
+	 * 
+	 * Use this constructor to handle a TICK request
+	 * 
+	 * @param tickCallbackClass - reference to the callback class which will handle the tick request.
+	 */
 	public TICKRequest(Runnable tickCallBackClass) {
 		super(null);
 		this.tickCallBackClass = tickCallBackClass;
 	}
 	
-	public TICKRequest() {
-		super(null);
+	/**
+	 * 
+	 * Use this constructor to create a TICK request message and send it
+	 * 
+	 * @param writer - writer object which will send the message.
+	 */
+	public TICKRequest(PrintWriter writer ) {
+		super(writer);
 	}
 
 	@Override

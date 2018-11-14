@@ -6,6 +6,14 @@ import entity.Cell;
 import entity.Snake;
 import game.Game;
 
+/**
+ * 
+ * This movement will randomly choose between any available direction (left or right)
+ * when it encounters and obstacle.
+ * 
+ * @author ebrunner
+ *
+ */
 public class RandomIntelligentMouvement implements Mouvement {
 	
 	public static final String KEY = "RDI";
@@ -107,4 +115,9 @@ public class RandomIntelligentMouvement implements Mouvement {
 		this.dir = dir;
 	}
 
+	@Override
+	public void cancelDirChange() {
+		dirChange = false;
+	}
+	
 }

@@ -194,7 +194,8 @@ public class Game implements Runnable{
 	 */
 	public void update() {
 		for(Snake e : snakeMap.values()) {
-			e.evolve();
+			if(e.isAlive())
+				e.evolve();
 		}
 	}
 

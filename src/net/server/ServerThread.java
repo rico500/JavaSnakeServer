@@ -77,8 +77,7 @@ public class ServerThread implements Runnable, GameListener {
 	 ************************************************************************/
 	
 	public void pushSnake(Snake e) {
-		outToClient.println(new PUTRequest(e).createRequest());
-		outToClient.flush();
+		new PUTRequest(outToClient, e).sendMessage();
 	}
 	
 	public int getID() {
@@ -103,8 +102,7 @@ public class ServerThread implements Runnable, GameListener {
 		
 		// Clients are informed of any modified entities by a set request
 		for(Snake e : game.getModifiedSnake()) {
-			outToClient.println(new SETRequest(game, e, e.getMouvement().getDirection()).createRequest());
-			outToClient.flush();
+			new SETRequest(outToClient, game, e, e.getMouvement().getDirection()).sendMessage();
 		}
 		
 		// Clients are informed of any removed entities by a DELRequest
@@ -113,22 +111,17 @@ public class ServerThread implements Runnable, GameListener {
 			// In case one of the removed entities is the client's snake itself,
 			// the client is asked to exit the game.
 			if(e.equals(snake)) {
-				outToClient.println(new EXITRequest().createRequest());
-				outToClient.flush();
+				new EXITRequest(outToClient).sendMessage();
 			} else {
-				outToClient.println(new DELRequest(e).createRequest());
-				outToClient.flush();
+				new DELRequest(outToClient, e).sendMessage();
 			}
 		}
-		
-		outToClient.println(new TICKRequest().createRequest());
-		outToClient.flush();
+		new TICKRequest(outToClient).sendMessage();
 	}
 	
 	@Override
 	public void requestStateJob() {
-		outToClient.println(new TOCKRequest().createRequest());
-		outToClient.flush();
+		new TOCKRequest(outToClient).sendMessage();
 	}
 	
 	/************************************************************************

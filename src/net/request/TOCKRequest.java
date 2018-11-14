@@ -1,5 +1,6 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 /**
@@ -33,13 +34,25 @@ public class TOCKRequest extends Request{
 	
 	Runnable tockCallBackClass;
 	
+	/**
+	 * 
+	 * Use this constructor to handle a TOCK request
+	 * 
+	 * @param tockCallbackClass - reference to the callback class which will handle the tock request.
+	 */
 	public TOCKRequest(Runnable tockCallBackClass) {
 		super(null);
 		this.tockCallBackClass = tockCallBackClass;
 	}
 	
-	public TOCKRequest() {
-		super(null);
+	/**
+	 * 
+	 * Use this constructor to create a TOCK request message and send it
+	 * 
+	 * @param writer - writer object which will send the message.
+	 */
+	public TOCKRequest(PrintWriter writer) {
+		super(writer);
 	}
 
 	@Override

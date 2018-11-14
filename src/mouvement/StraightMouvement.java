@@ -2,6 +2,14 @@ package mouvement;
 
 import entity.Cell;
 
+/**
+ * 
+ * This movement will go in the direction which it is set to until its direction is 
+ * modified by some exterior process.
+ * 
+ * @author ebrunner
+ *
+ */
 public class StraightMouvement implements Mouvement {
 	
 	public static final String KEY = "STR";
@@ -53,6 +61,10 @@ public class StraightMouvement implements Mouvement {
 	@Override
 	public void setDirection(Directions dir) {
 		this.dir = dir;
+	}
+	
+	@Override
+	public void cancelDirChange() {
 	}
 
 }

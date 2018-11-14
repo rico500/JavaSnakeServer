@@ -130,6 +130,7 @@ public class Snake {
 	 *
 	 */
 	public void dies() {
+		mvmt.cancelDirChange();
 		isAlive = false;
 	}
 	

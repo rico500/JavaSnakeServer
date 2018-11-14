@@ -1,5 +1,6 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 import entity.Cell;
@@ -41,8 +42,9 @@ public class PUTRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	Snake snakeToPut;
-	String mouvementType;
+	private Snake snakeToPut;
+	private String mouvementType;
+	private Game game;
 
 	/************************************************************************
 	 * 
@@ -50,20 +52,44 @@ public class PUTRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
-	public PUTRequest(Snake snake) {
+	/**
+	 * 
+	 * Use this constructor to handle a PUT Request. 
+	 * The new snake will have a straight movement type by default.
+	 * 
+	 * @param game - reference to the game where the new snake is to be put.
+	 */
+	public PUTRequest(Game game) {
 		super(null);
+		this.game = game;
+		this.mouvementType = StraightMouvement.KEY;
+	}
+	
+	/**
+	 * 
+	 * Use this constructor to handle a PUT Request. 
+	 * The new snake will have a movement type defined by the constructor.
+	 * 
+	 * @param game - reference to the game where the new snake is to be put.
+	 * @param mouvementType - Key corresponding to the desired movement type for the snake.
+	 */
+	public PUTRequest(Game game, String mouvementType) {
+		super(null);
+		this.game = game;
+		this.mouvementType = mouvementType;
+	}
+	
+	/**
+	 * 
+	 * Use this constructor to create and send a PUT request message.
+	 * 
+	 * @param writer - writer object which will send the message.
+	 * @param snake - reference to snake to put in remote game.
+	 */
+	public PUTRequest(PrintWriter writer, Snake snake) {
+		super(writer);
 		this.snakeToPut = snake;
 		this.mouvementType = StraightMouvement.KEY;
-	}
-	
-	public PUTRequest(Game game) {
-		super(game);
-		this.mouvementType = StraightMouvement.KEY;
-	}
-	
-	public PUTRequest(Game game, String mouvementType) {
-		super(game);
-		this.mouvementType = mouvementType;
 	}
 	
 	/************************************************************************

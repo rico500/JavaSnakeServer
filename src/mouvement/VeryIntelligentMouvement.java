@@ -6,6 +6,15 @@ import entity.Cell;
 import entity.Snake;
 import game.Game;
 
+/**
+ * 
+ * At each game step, this snake will evaluate which direction has the most distant 
+ * obstacle, be it another snake, itself or a wall and will evolve in that direction.
+ * If two directions are equally promissing, the snake will randomly choose between them.
+ * 
+ * @author ebrunner
+ *
+ */
 public class VeryIntelligentMouvement implements Mouvement{
 	
 	public static final String KEY = "VIT";
@@ -21,7 +30,7 @@ public class VeryIntelligentMouvement implements Mouvement{
 		this.game = game;
 		this.snake = snake;
 	}
-	
+
 	@Override
 	public void computeNextDirection() {
 		
@@ -257,6 +266,11 @@ public class VeryIntelligentMouvement implements Mouvement{
 	@Override
 	public void setDirection(Directions dir) {
 		this.dir = dir;
+	}
+	
+	@Override
+	public void cancelDirChange() {
+		dirChange = false;
 	}
 
 }

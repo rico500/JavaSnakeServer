@@ -1,5 +1,6 @@
 package net.request;
 
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 /**
@@ -23,7 +24,13 @@ public class EXITRequest extends Request{
 	
 	public static final String KEY = "EXIT";
 	
-	Runnable exitCallbackClass;
+	/************************************************************************
+	 * 
+	 * Attributes
+	 * 
+	 ************************************************************************/
+	
+	private Runnable exitCallbackClass;
 	
 	/************************************************************************
 	 * 
@@ -31,13 +38,25 @@ public class EXITRequest extends Request{
 	 * 
 	 ************************************************************************/
 	
+	/**
+	 * 
+	 * Use this constructor to handle an EXIT request
+	 * 
+	 * @param exitCallbackClass - reference to the callback class which will handle the exit request.
+	 */
 	public EXITRequest(Runnable exitCallbackClass) {
 		super(null);
 		this.exitCallbackClass = exitCallbackClass;
 	}
 	
-	public EXITRequest() {
-		super(null);
+	/**
+	 * 
+	 * Use this constructor to create an EXIT request message and send it
+	 * 
+	 * @param writer - writer object which will send the message.
+	 */
+	public EXITRequest(PrintWriter writer) {
+		super(writer);
 	}
 	
 	/************************************************************************

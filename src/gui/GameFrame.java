@@ -2,14 +2,13 @@ package gui;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import entity.Cell;
 import entity.Snake;
@@ -62,9 +61,6 @@ public abstract class GameFrame extends Application {
 	/** Root of the Java FX scene graph containing all the elements to display */
 	protected Group root;
 	
-	/** The timer for scheduling next game step */
-	private Timer timer;
-	
 	/** Instance of the game */
 	private Game game ;
 
@@ -105,13 +101,51 @@ public abstract class GameFrame extends Application {
 		
 		// Parse arguments
 		List<String> args = getParameters().getRaw();
-		int port = Integer.parseInt(args.get(0));
-		String machine = args.get(1);
-		String mouvementType = args.get(2);
+		
+		int port;
+		String machine;
+		String mouvementType;
+		
+		try {
+			try {
+		port = Integer.parseInt(args.get(0));
+			} catch(NumberFormatException e){
+				System.err.println("Error while reading port parameter. It must be an integer.");
+				Platform.exit();
+				return;
+			}
+		machine = args.get(1);
+		mouvementType = args.get(2);
+		} catch(IndexOutOfBoundsException e) {
+			System.err.println("Error while parsing inputs, not enough inputs. "
+					+ "Please provide a port number, a server address and a movement type.");
+			Platform.exit();
+			return;
+		} 
+		
+		// set if the movement type is one of a bot or is manually controlled.
 		if(mouvementType.equals(StraightMouvement.KEY)) {isBot = false;}
 		
 		// connect to server
+		System.out.println("Trying to connect to : " + machine + ":" + port);
+		try {
 		comSocket = new Socket(machine, port);
+		} catch (ConnectException e) {
+			System.err.println("Connection to server refused, check port number, "
+					+ "check that server is running and "
+					+ "check that the maximum number of players is not exceeded.");
+			Platform.exit();
+			return;
+		} catch (IllegalArgumentException e) {
+			System.err.println("Error while reading port parameter. It must be an "
+					+ "integer between 0 and 65535.");
+			Platform.exit();
+			return;
+		} catch (UnknownHostException e) {
+			System.err.println("Connection to server refused. Unknown server address : "
+					+ machine);
+		}
+		System.out.println("Connection accepted.");
 		
 		// initialize character writer
 		writer = new PrintWriter(comSocket.getOutputStream());
@@ -141,9 +175,6 @@ public abstract class GameFrame extends Application {
 		}
 		// terminate the Application when the window is closed
 		primaryStage.setOnCloseRequest(event -> { exitEventHandler(); Platform.exit(); System.exit(0); } );
-
-		// Create the timer
-		timer = new Timer();
 		
 		// Show a graphical window with all the graph scene content
 		primaryStage.setScene(scene);
@@ -153,10 +184,14 @@ public abstract class GameFrame extends Application {
 	}	
 	
 	
+	/**
+	 * 
+	 * Tasks to execute when client closes the application.
+	 * 
+	 */
 	public void exitEventHandler() {
 		try {
-			writer.println(new EXITRequest().createRequest());
-			writer.flush();
+			new EXITRequest(writer).sendMessage();
 			comSocket.close();
 		} catch (IOException e) {
 			System.err.println("IOException occured while closing socket.");
@@ -164,6 +199,13 @@ public abstract class GameFrame extends Application {
 		Platform.exit();
 	}
 
+	/**
+	 * 
+	 * Callback method which handles key events. If the server is taking in updates from the clients, key
+	 * events may be sent at any time.
+	 * 
+	 * @param event - a KeyEvent
+	 */
 	public void keyEventHandler(KeyEvent event) {
 		
 		// Check if client has already been given a snake from the server
@@ -197,8 +239,7 @@ public abstract class GameFrame extends Application {
 			// If all conditions are fulfilled, communicate new direction to server
 			if(isKnown == true  && !isAligned) {
 				if(!isTick) {
-					writer.println(new SETRequest(game, snakeToUpdate, DesiredDir).createRequest());
-					writer.flush();
+					new SETRequest(writer, game, snakeToUpdate, DesiredDir).sendMessage();
 				} else {
 					pendingDir = DesiredDir;
 				}
@@ -206,6 +247,13 @@ public abstract class GameFrame extends Application {
 		}
 	}
 	
+	/**
+	 * 
+	 * Runnable class which schedules the actual TICK event handler on the javaFX thread.
+	 * 
+	 * @author ebrunner
+	 *
+	 */
 	private class TickEventHandler implements Runnable {
 		
 		Runnable eventTask;
@@ -216,10 +264,18 @@ public abstract class GameFrame extends Application {
 		
 		@Override
 		public void run() {
+			// Schedule task on javaFX thread.
 			Platform.runLater(eventTask);
 		}
 	}
 	
+	/**
+	 * 
+	 * Runnable class which contains the actual TICK event handler logic.
+	 * 
+	 * @author ebrunner
+	 *
+	 */
 	private class TickEventTask implements Runnable {
 		/**
 		 * 
@@ -247,6 +303,13 @@ public abstract class GameFrame extends Application {
 		}
 	}
 	
+	/**
+	 * 
+	 * Runnable class which schedules the actual TOCK event handler on the javaFX thread.
+	 * 
+	 * @author ebrunner
+	 *
+	 */
 	private class TockEventHandler implements Runnable {
 		
 		Runnable eventTask;
@@ -257,10 +320,18 @@ public abstract class GameFrame extends Application {
 		
 		@Override
 		public void run() {
+			// Schedule task on the javaFX thread.
 			Platform.runLater(eventTask);
 		}
 	}
 	
+	/**
+	 * 
+	 * Runnable class which contains the actual TOCK event handler logic.
+	 * 
+	 * @author ebrunner
+	 *
+	 */
 	private class TockEventTask implements Runnable {
 		/**
 		 * 
@@ -273,32 +344,40 @@ public abstract class GameFrame extends Application {
 		@Override
 		public void run() {
 			
-			// If the client is a bot, then now is the time to send information on 
-			// the bot's next action.
-			if(isBot) {
-				Mouvement nextMouv = clientThread.getSnake().getMouvement();
-				nextMouv.computeNextDirection();
-				if(nextMouv.directionHasChanged()) {
-					writer.println(new SETRequest(game, clientThread.getSnake(), nextMouv.getDirection()).createRequest());
-					writer.flush();
-				}
-				
-				// if the client isn't a bot, send any pending direction updates that may
-				// have been entered by the user
-			} else {
-				if(pendingDir != null) {
-					writer.println(new SETRequest(game, clientThread.getSnake(), pendingDir).createRequest());
-					writer.flush();
-					pendingDir = null;
+			// Check if the client's snake is still alive before sending anything
+			if(clientThread.getSnake().isAlive()) {
+
+				// If the client is a bot, then now is the time to send information on 
+				// the bot's next action.
+				if(isBot) {
+					Mouvement nextMouv = clientThread.getSnake().getMouvement();
+					nextMouv.computeNextDirection();
+					if(nextMouv.directionHasChanged()) {
+						new SETRequest(writer, game, clientThread.getSnake(), nextMouv.getDirection()).sendMessage();
+					}
+
+					// if the client isn't a bot, send any pending direction updates that may
+					// have been entered by the user
+				} else {
+					if(pendingDir != null) {
+						new SETRequest(writer, game, clientThread.getSnake(), pendingDir).sendMessage();
+						pendingDir = null;
+					}
 				}
 			}
-			
 			// client exits tick phase by completing tock logic
 			isTick = false;
 		}
 	}
 	
-	public Collection<Node> computeNodeList() {
+	/**
+	 * 
+	 * Gets all cells from the snakes in the game and returns a corresponding collection 
+	 * of nodes with the right color and shape.
+	 * 
+	 * @return Collection of Nodes to be displayed by javaFX.
+	 */
+	private Collection<Node> computeNodeList() {
 		// take care of rearranging data on current state of game to display it
 		ArrayList<Node> nodeList = new ArrayList<Node>();
 		for(Snake e : game.getSnakeMap().values()) {

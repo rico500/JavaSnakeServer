@@ -17,14 +17,14 @@ public class Server {
 	public static void main(String[] args) throws IOException {
 		
 		// Create game constants
-		final Color[] COLOR_ARRAY = {Color.ALICEBLUE, Color.GOLD, Color.LAVENDER, Color.MEDIUMVIOLETRED};
+		final Color[] COLOR_ARRAY = {Color.RED, Color.GOLD, Color.LAVENDER, Color.MEDIUMVIOLETRED};
 		final Directions[] dirArray = {Directions.EAST, Directions.WEST, Directions.NORTH, Directions.SOUTH};
 		final int[] xArray = {3, GameFrame.GRID_SIZE-3, GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2};
 		final int[] yArray = {GameFrame.GRID_SIZE/2, GameFrame.GRID_SIZE/2, 0, GameFrame.GRID_SIZE};
 		
 		// Read server listener port from launch arguments
 		int port;
-	
+		
 		try {
 			port = Integer.parseInt(args[0]);
 		} catch (NumberFormatException e) {
@@ -49,9 +49,19 @@ public class Server {
 		Game game = new Game();
 		
 		// read number of desired players
-		final int playerN = Integer.parseInt(args[1]);
-		if(playerN > 4 || playerN < 2) {
-			throw new IllegalArgumentException("Allowed number of players between 2 and 4, you required "+ playerN);
+		final int playerN;
+		try {
+			 playerN  = Integer.parseInt(args[1]);
+		} catch (NumberFormatException e) {
+			System.err.println("Error while reading number of players parameter. It must be an integer.");
+			throw e;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.err.println("Please enter a number of players.");
+			throw e;
+		}
+		
+		if(playerN > 4 || playerN < 1) {
+			throw new IllegalArgumentException("Allowed number of players between 1 and 4, you required "+ playerN);
 		}
 		
 		// add expected number of snakes to game
@@ -62,6 +72,8 @@ public class Server {
 		
 		// Create Client Array
 		ArrayList<ServerThread> clientList = new ArrayList<ServerThread>();
+		
+		System.out.println("Server is running.");
 		
 		// Accept clients as they come
 		for(int counter = 1; counter < playerN+1; counter++) {
